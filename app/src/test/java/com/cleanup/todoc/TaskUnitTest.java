@@ -3,7 +3,7 @@ package com.cleanup.todoc;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
-import com.cleanup.todoc.model.Task;
+import com.cleanup.todoc.model.entity.Task;
 
 import org.junit.Test;
 
