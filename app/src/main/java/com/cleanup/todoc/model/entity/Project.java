@@ -3,33 +3,35 @@ package com.cleanup.todoc.model.entity;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-/**
- * <p>Models for project in which tasks are included.</p>
- *
- * @author Gaëtan HERFRAY
- */
+import java.util.Objects;
 
 @Entity(tableName = "project_table")
 public class Project {
+
+
     /**
      * The unique identifier of the project
      */
     @PrimaryKey(autoGenerate = true)
-    private final long id;
+    @ColumnInfo(name = "project_id")
+    private long id;
 
     /**
      * The name of the project
      */
     @NonNull
+    @ColumnInfo(name = "project_name")
     private final String name;
 
     /**
      * The hex (ARGB) code of the color associated to the project
      */
     @ColorInt
+    @ColumnInfo(name = "project_color")
     private final int color;
 
     /**
@@ -39,7 +41,7 @@ public class Project {
      * @param name  the name of the project to set
      * @param color the hex (ARGB) code of the color associated to the project to set
      */
-    private Project(long id, @NonNull String name, @ColorInt int color) {
+    public Project( long id, @NonNull String name, @ColorInt int color) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -85,6 +87,15 @@ public class Project {
     }
 
     /**
+     * Set id.
+     *
+     * @param id the id of the project
+     */
+    public void setId(long id){
+        this.id = id;
+    }
+
+    /**
      * Returns the name of the project.
      *
      * @return the name of the project
@@ -108,5 +119,18 @@ public class Project {
     @NonNull
     public String toString() {
         return getName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Project)) return false;
+        Project project = (Project) o;
+        return id == project.id && color == project.color && name.equals(project.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color);
     }
 }

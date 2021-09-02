@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.Query;
 
 import com.cleanup.todoc.model.entity.Project;
 
@@ -21,7 +22,6 @@ public interface ProjectDao {
     @Delete
     void delete(Project project);
 
-    LiveData<List<Project>> getProject();
-
-    // TODO : add transaction and query
+    @Query("SELECT * FROM project_table ORDER BY project_id")
+    LiveData<List<Project>> getAllProjects();
 }

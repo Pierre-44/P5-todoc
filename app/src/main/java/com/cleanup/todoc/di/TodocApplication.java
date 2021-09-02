@@ -7,16 +7,11 @@ import android.app.Application;
  */
 public class TodocApplication extends Application {
 
-    private static Application instance;
+    public static TodocContainer sTodocContainer;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-        instance = this;
-    }
-
-    public static Application getInstance() {
-        return  instance;
+        TodocContainer sTodocContainer = new TodocContainer(this);
     }
 }
