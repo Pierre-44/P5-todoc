@@ -24,4 +24,6 @@ public interface ProjectDao {
 
     @Query("SELECT * FROM project_table ORDER BY project_id")
     LiveData<List<Project>> getAllProjects();
+
+
 }

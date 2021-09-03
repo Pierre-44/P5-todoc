@@ -26,19 +26,19 @@ public interface TaskDao {
     @Update
     void update(Task task);
 
-    @Transaction
+
     @Query("SELECT * FROM task_table ORDER BY task_id ")
     LiveData<List<Task>> getAllTasks();
 
-    @Transaction
+
     @Query("SELECT * FROM task_table ORDER BY task_creation_time_stamp ASC")
     LiveData<List<Task>> getAllTasksByTimeStampRecent();
 
-    @Transaction
+
     @Query("SELECT * FROM task_table ORDER BY task_creation_time_stamp DESC")
     LiveData<List<Task>> getAllTasksByTimeStampOld();
 
-    @Transaction
+
     @Query("SELECT * FROM task_table ORDER BY task_name ASC")
     LiveData<List<Task>> getAllTasksByNameAZ();
 

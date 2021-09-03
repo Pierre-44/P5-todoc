@@ -16,8 +16,8 @@ public class TodocContainer {
 
     public TodocContainer(Application application) {
         TodocDatabase database = TodocDatabase.getInstance(application);
-        mProjectRepository = new ProjectRepository(database.mProjectDao());
-        mTaskRepository = new TaskRepository(database.mTaskDao());
+        mProjectRepository = new ProjectRepository(application);
+        mTaskRepository = new TaskRepository(application);
     }
 
     public ProjectRepository getProjectRepository() {return mProjectRepository;}

@@ -21,12 +21,14 @@ import java.util.concurrent.Executors;
 @Database(entities = {Project.class , Task.class}, exportSchema = false, version = 1)
 public abstract class TodocDatabase extends RoomDatabase {
 
+    // instance
     private static TodocDatabase instanceDB;
 
+    // Dao Interfaces
     public abstract ProjectDao mProjectDao();
-
     public abstract TaskDao mTaskDao();
 
+    // Singleton
     public static synchronized TodocDatabase getInstance(Context context) {
         if(instanceDB == null) {
             instanceDB = Room.databaseBuilder(context.getApplicationContext(), TodocDatabase.class, "todoc_database")

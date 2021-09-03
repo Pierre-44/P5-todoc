@@ -1,7 +1,11 @@
 package com.cleanup.todoc.model.repository;
 
+import android.app.Application;
+import android.os.AsyncTask;
+
 import androidx.lifecycle.LiveData;
 
+import com.cleanup.todoc.db.TodocDatabase;
 import com.cleanup.todoc.model.dao.ProjectDao;
 import com.cleanup.todoc.model.entity.Project;
 
@@ -14,17 +18,21 @@ import java.util.concurrent.Executors;
  */
 public class ProjectRepository {
 
-    //field
+    //fields
     private final ProjectDao mProjectDao;
-    private final LiveData<List<Project>> allProjects;
     private final Executor doInBackground;
 
+    private final LiveData<List<Project>> allProjects;
+
     // Constructor
-    public ProjectRepository(ProjectDao projectDao) {
-        mProjectDao = projectDao;
-        allProjects = projectDao.getAllProjects();
+    public ProjectRepository(Application application) {
+        TodocDatabase todocDatabase = TodocDatabase.getInstance(application);
+        mProjectDao = todocDatabase.mProjectDao();
+        allProjects = mProjectDao.getAllProjects();
         doInBackground = Executors.newFixedThreadPool(2);
     }
+
+    // methods of interface
 
     public void insert(Project project) {
         doInBackground.execute(()-> mProjectDao.insert(project));
@@ -34,8 +42,12 @@ public class ProjectRepository {
         doInBackground.execute(()-> mProjectDao.delete(project));
     }
 
+    // getters
+
     public LiveData<List<Project>> getAllProjects() {
         return allProjects;
     }
+
+
 }
 

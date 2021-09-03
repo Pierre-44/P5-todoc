@@ -9,7 +9,6 @@ import androidx.room.PrimaryKey;
 import java.util.Comparator;
 import java.util.Objects;
 
-
 @Entity(tableName = "task_table", foreignKeys = {@ForeignKey(
                 entity = Project.class,
                 parentColumns = "project_id",
