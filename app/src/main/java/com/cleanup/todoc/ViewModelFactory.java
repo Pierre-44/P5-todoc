@@ -21,6 +21,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     private final ProjectRepository mProjectRepository;
     @NonNull
     private final TaskRepository mTaskRepository;
+
     private ViewModelFactory(
             @NonNull ProjectRepository projectRepository,
             @NonNull TaskRepository taskRepository

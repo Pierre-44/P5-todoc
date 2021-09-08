@@ -1,12 +1,13 @@
 package com.cleanup.todoc.model.dao;
+
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
-import androidx.room.Update;
 
+import com.cleanup.todoc.model.entity.RelationTaskWithProject;
 import com.cleanup.todoc.model.entity.Task;
 
 import java.util.List;
@@ -23,28 +24,28 @@ public interface TaskDao {
     @Delete
     void delete(Task task);
 
-    @Update
-    void update(Task task);
 
-
-    @Query("SELECT * FROM task_table ORDER BY task_id ")
-    LiveData<List<Task>> getAllTasks();
-
-
-    @Query("SELECT * FROM task_table ORDER BY task_creation_time_stamp ASC")
-    LiveData<List<Task>> getAllTasksByTimeStampRecent();
-
-
-    @Query("SELECT * FROM task_table ORDER BY task_creation_time_stamp DESC")
-    LiveData<List<Task>> getAllTasksByTimeStampOld();
-
-
-    @Query("SELECT * FROM task_table ORDER BY task_name ASC")
-    LiveData<List<Task>> getAllTasksByNameAZ();
+    @Query("DELETE FROM task_table")
+    void deleteAllTasks();
 
     @Transaction
-    @Query("SELECT * FROM task_table ORDER BY task_name DESC")
-    LiveData<List<Task>> getAllTasksByNameZA();
+    @Query("SELECT * FROM task_table ORDER BY id ")
+    LiveData<List<RelationTaskWithProject>> getAllTasks();
 
+    @Transaction
+    @Query("SELECT * FROM task_table ORDER BY creation_time_stamp ASC")
+    LiveData<List<RelationTaskWithProject>> getAllTasksByTimeStampRecent();
+
+    @Transaction
+    @Query("SELECT * FROM task_table ORDER BY creation_time_stamp DESC")
+    LiveData<List<RelationTaskWithProject>> getAllTasksByTimeStampOld();
+
+    @Transaction
+    @Query("SELECT * FROM task_table ORDER BY name ASC")
+    LiveData<List<RelationTaskWithProject>> getAllTasksByNameAZ();
+
+    @Transaction
+    @Query("SELECT * FROM task_table ORDER BY name DESC")
+    LiveData<List<RelationTaskWithProject>> getAllTasksByNameZA();
 
 }

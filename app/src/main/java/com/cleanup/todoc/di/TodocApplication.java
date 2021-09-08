@@ -12,6 +12,6 @@ public class TodocApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        TodocContainer sTodocContainer = new TodocContainer(this);
+        sTodocContainer = new TodocContainer(this);
     }
 }

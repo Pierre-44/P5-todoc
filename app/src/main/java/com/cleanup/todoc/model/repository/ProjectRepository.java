@@ -21,6 +21,7 @@ public class ProjectRepository {
     private final ProjectDao mProjectDao;
     private final Executor doInBackground;
 
+
     private final LiveData<List<Project>> allProjects;
 
     // Constructor
@@ -41,12 +42,10 @@ public class ProjectRepository {
         doInBackground.execute(()-> mProjectDao.delete(project));
     }
 
-    // getters
+    // getter
 
     public LiveData<List<Project>> getAllProjects() {
         return allProjects;
     }
-
-
 }
 

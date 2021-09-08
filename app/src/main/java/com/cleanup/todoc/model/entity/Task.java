@@ -11,16 +11,15 @@ import java.util.Objects;
 
 @Entity(tableName = "task_table", foreignKeys = {@ForeignKey(
                 entity = Project.class,
-                parentColumns = "project_id",
+                parentColumns = "id",
                 childColumns = "project_id")
 })
-
 public class Task {
     /**
      * The unique identifier of the task
      */
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "task_id")
+    @ColumnInfo(name = "id")
     private long id;
     /**
      * The unique identifier of the project associated to the task
@@ -31,12 +30,12 @@ public class Task {
     /**
      * The name of the task
      */
-    @ColumnInfo(name = "task_name")
+    @ColumnInfo(name = "name")
     private String name;
     /**
      * The timestamp when the task has been created
      */
-    @ColumnInfo(name = "task_creation_time_stamp")
+    @ColumnInfo(name = "creation_time_stamp")
     private long creationTimestamp;
 
 
@@ -140,7 +139,6 @@ public class Task {
     public int hashCode() {
         return Objects.hash(id, projectId, name, creationTimestamp);
     }
-
 
     //--------------------------------------------------
     // Task Comparator

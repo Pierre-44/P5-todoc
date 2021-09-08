@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 
 import com.cleanup.todoc.db.TodocDatabase;
 import com.cleanup.todoc.model.dao.TaskDao;
+import com.cleanup.todoc.model.entity.RelationTaskWithProject;
 import com.cleanup.todoc.model.entity.Task;
 
 import java.util.List;
@@ -21,11 +22,11 @@ public class TaskRepository {
     private final TaskDao mTaskDao;
     private final Executor doInBackground;
 
-    public final LiveData<List<Task>> allTasksLivedata;
-    public final LiveData<List<Task>> allTasksLivedataAZ;
-    public final LiveData<List<Task>> allTasksLivedataZA;
-    public final LiveData<List<Task>> allTasksLivedataOld;
-    public final LiveData<List<Task>> allTasksLivedataRecent;
+    public final LiveData<List<RelationTaskWithProject>> allTasksLivedata;
+    public final LiveData<List<RelationTaskWithProject>> allTasksLivedataAZ;
+    public final LiveData<List<RelationTaskWithProject>> allTasksLivedataZA;
+    public final LiveData<List<RelationTaskWithProject>> allTasksLivedataOld;
+    public final LiveData<List<RelationTaskWithProject>> allTasksLivedataRecent;
 
     // Constructor
     public TaskRepository(Application application) {
@@ -45,36 +46,46 @@ public class TaskRepository {
         doInBackground.execute(() -> mTaskDao.insert(task));
     }
 
-    public void update(Task task) {
-        doInBackground.execute(() -> mTaskDao.update(task));
+
+
+    // not used at the moment
+    public void delete(Task task) {
+        doInBackground.execute(new Runnable() {
+            @Override
+            public void run() {
+                mTaskDao.delete(task);
+            }
+        });
     }
 
-    public void delete(Task task) {
-        doInBackground.execute(() -> mTaskDao.delete(task));
+    public void deleteTask(Task task) {
+        //new DeleteTaskAsyncTask(mTaskDao).execute(task);
+    }
+    // not used at the moment
+    public void deleteAllTask() {
+       // new DeleteAllTasksAsyncTask(mTaskDao).execute();
     }
 
     // getters
 
-    public LiveData<List<Task>> getAllTasksLivedata() {
+    public LiveData<List<RelationTaskWithProject>> getAllTasksLivedata() {
         return allTasksLivedata;
     }
 
-    public LiveData<List<Task>> getAllTasksLivedataAZ() {
+    public LiveData<List<RelationTaskWithProject>> getAllTasksLivedataAZ() {
         return allTasksLivedataAZ;
     }
 
-    public LiveData<List<Task>> getAllTasksLivedataZA() {
+    public LiveData<List<RelationTaskWithProject>> getAllTasksLivedataZA() {
         return allTasksLivedataZA;
     }
 
-    public LiveData<List<Task>> getAllTasksLivedataOld() {
+    public LiveData<List<RelationTaskWithProject>> getAllTasksLivedataOld() {
         return allTasksLivedataOld;
     }
 
-    public LiveData<List<Task>> getAllTasksLivedataRecent() {
+    public LiveData<List<RelationTaskWithProject>> getAllTasksLivedataRecent() {
         return allTasksLivedataRecent;
     }
-
-
 
 }
