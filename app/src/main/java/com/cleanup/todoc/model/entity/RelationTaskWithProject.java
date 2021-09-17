@@ -7,6 +7,7 @@ import androidx.room.Relation;
  * Created by pmeignen on 08/09/2021.
  */
 public class RelationTaskWithProject {
+
     @Embedded
     private Task mTask;
     @Relation(
@@ -27,7 +28,11 @@ public class RelationTaskWithProject {
     public Project getProject() {
         return mProject;
     }
+
     public void setProject(Project project) {
         this.mProject = project;
     }
+
+
+
 }

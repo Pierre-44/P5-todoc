@@ -42,12 +42,11 @@ public abstract class TodocDatabase extends RoomDatabase {
         return instanceDB;
     }
 
-    private static final RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
+    private static RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
         @Override
         public void onCreate(@NonNull @NotNull SupportSQLiteDatabase db) {
             super.onCreate(db);
             populateProjectsInDb();
-            //populateTasksInDb();
         }
     };
 
@@ -58,19 +57,4 @@ public abstract class TodocDatabase extends RoomDatabase {
             instanceDB.mProjectDao().insert(new Project("Projet Circus", 0xFFA3CED2));
         });
     }
-
-// Data for testing to be move on test mock database
-    //private static void populateTasksInDb() {
-    //    Executors.newFixedThreadPool(4).execute(() -> {
-    //        instanceDB.mTaskDao().insert(new Task(1L,1L,"Task1",1630497600+1));
-    //        instanceDB.mTaskDao().insert(new Task(2L,1L,"Task2",1630497600+2));
-    //        instanceDB.mTaskDao().insert(new Task(3L,1L,"Task3",1630497600+3));
-    //        instanceDB.mTaskDao().insert(new Task(4L,2L,"Task4",1630497600+4));
-    //        instanceDB.mTaskDao().insert(new Task(5L,2L,"Task5",1630497600+5));
-    //        instanceDB.mTaskDao().insert(new Task(6L,2L,"Task6",1630497600+6));
-    //        instanceDB.mTaskDao().insert(new Task(7L,3L,"Task7",1630497600+7));
-    //        instanceDB.mTaskDao().insert(new Task(8L,3L,"Task8",1630497600+8));
-    //        instanceDB.mTaskDao().insert(new Task(9L,3L,"Task9",1630497600+9));
-    //    });
-    //}
 }

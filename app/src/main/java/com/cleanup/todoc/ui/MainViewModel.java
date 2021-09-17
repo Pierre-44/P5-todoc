@@ -1,6 +1,11 @@
 package com.cleanup.todoc.ui;
 
+import static com.cleanup.todoc.ui.Utils.SortMethod.NONE;
+
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.cleanup.todoc.model.dao.ProjectDao;
@@ -10,176 +15,121 @@ import com.cleanup.todoc.model.entity.RelationTaskWithProject;
 import com.cleanup.todoc.model.entity.Task;
 import com.cleanup.todoc.model.repository.ProjectRepository;
 import com.cleanup.todoc.model.repository.TaskRepository;
+import com.cleanup.todoc.ui.Utils.SortMethod;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 /**
  * Created by pmeignen on 30/08/2021.
  */
 public class MainViewModel extends ViewModel {
 
-    //fields
-    private TaskDao taskDao;
-    private ProjectDao projectDao;
-
+    //Repository
     private final ProjectRepository mProjectRepository;
     private final TaskRepository mTaskRepository;
+    private final Executor mExecutor;
 
-    private final LiveData<List<Project>> allProjectsLivedata;
-    private final LiveData<List<RelationTaskWithProject>> allTasksLivedata;
+    private final LiveData<List<Project>> allProjects;
     private final LiveData<List<RelationTaskWithProject>> allTasksLivedataAZ;
     private final LiveData<List<RelationTaskWithProject>> allTasksLivedataZA;
     private final LiveData<List<RelationTaskWithProject>> allTasksLivedataOld;
     private final LiveData<List<RelationTaskWithProject>> allTasksLivedataRecent;
+    // Sorting
+    public MutableLiveData<SortMethod> mSortingTypeMutableLiveData = new MutableLiveData<>();
+    public LiveData<List<RelationTaskWithProject>> mListTaskLiveData = new LiveData<List<RelationTaskWithProject>>() {};
+    public MediatorLiveData<List<RelationTaskWithProject>> mSortedListMediatorLiveData = new MediatorLiveData<>();
+
+    // fields
+    private TaskDao taskDao;
+    private ProjectDao projectDao;
 
     /**
      * Instantiates a new Main view model.
      *
-     * @param projectRepository the project repository
-     * @param taskRepository    the task repository
+     * @param taskRepository the task repository
      */
-    public MainViewModel(ProjectRepository projectRepository, TaskRepository taskRepository) {
+// Constructor
+    public MainViewModel(ProjectRepository projectRepository, TaskRepository taskRepository, Executor executor) {
+
         this.mProjectRepository = projectRepository;
         this.mTaskRepository = taskRepository;
-        allProjectsLivedata = projectRepository.getAllProjects();
-        allTasksLivedata = taskRepository.getAllTasksLivedata();
-        allTasksLivedataAZ = taskRepository.getAllTasksLivedataAZ();
-        allTasksLivedataZA = taskRepository.getAllTasksLivedataZA();
-        allTasksLivedataOld = taskRepository.getAllTasksLivedataOld();
-        allTasksLivedataRecent = taskRepository.getAllTasksLivedataRecent();
+        this.mExecutor = executor;
+
+        allProjects = projectRepository.getAllProjects();
+        mSortingTypeMutableLiveData.setValue(NONE);
+        allTasksLivedataAZ = mTaskRepository.getAllTasksLivedataAZ();
+        allTasksLivedataZA = mTaskRepository.getAllTasksLivedataZA();
+        allTasksLivedataOld = mTaskRepository.getAllTasksLivedataOld();
+        allTasksLivedataRecent = mTaskRepository.getAllTasksLivedataRecent();
+
+
+        //Adding data as source to mediator
+        mSortedListMediatorLiveData.addSource(mListTaskLiveData, new Observer<List<RelationTaskWithProject>>() {
+            @Override
+            public void onChanged(List<RelationTaskWithProject> relationTaskWithProjects) {
+                mSortedListMediatorLiveData.setValue(combineDataAndSortingType(mListTaskLiveData, mSortingTypeMutableLiveData));
+
+            }
+        });
+
+        //Adding order as source to mediator
+        mSortedListMediatorLiveData.addSource(mSortingTypeMutableLiveData, new Observer<SortMethod>() {
+            @Override
+            public void onChanged(SortMethod sortingType) {
+                mSortedListMediatorLiveData.setValue(combineDataAndSortingType(mListTaskLiveData, mSortingTypeMutableLiveData));
+            }
+        });
     }
 
 
     /**
-     * Insert task in database.
-     *
-     * @param task the task to insert
+     * Sort the task list depending on active sorting method and set related live data and
+     * launch view state setting
      */
-    public void insertTask(Task task) {
-        mTaskRepository.insert(task);
+    private List<RelationTaskWithProject> combineDataAndSortingType(LiveData<List<RelationTaskWithProject>> tasksLiveData, MutableLiveData<SortMethod> sortingTypeLiveData) {
+
+        if (tasksLiveData.getValue() == null || sortingTypeLiveData.getValue() == null) {
+            return new ArrayList<>();
+        }
+
+        List<RelationTaskWithProject> listToSort = tasksLiveData.getValue();
+
+        switch (sortingTypeLiveData.getValue()) {
+            case NONE:
+                return tasksLiveData.getValue();
+            case ALPHABETICAL:
+                Collections.sort(listToSort, new Task.TaskAZComparator());
+                return listToSort;
+            case ALPHABETICAL_INVERTED:
+                Collections.sort(listToSort, new Task.TaskZAComparator());
+                return listToSort;
+            case OLD_FIRST:
+                Collections.sort(listToSort, new Task.TaskOldComparator());
+                return listToSort;
+            case RECENT_FIRST:
+                Collections.sort(listToSort, new Task.TaskRecentComparator());
+                return listToSort;
+            default:
+                return listToSort;
+        }
     }
 
-    /**
-     * Update task in database.
-     *
-     * This feature is not implemented
-     *
-     * @param task the task to insert
-     */
-    public void updateTask(Task task) {
-        //mTaskRepository.update(task);
+    public void deleteTaskById(final int id){
+
     }
 
-    /**
-     * Delete task in database.
-     *
-     * @param task the task to insert
-     */
-    public void deleteTask(Task task) {
-        mTaskRepository.deleteTask(task);
-    }
 
     /**
-     * Delete all task in database.
+     * Set the sorting method for the task list in the mutable live data and launch the sorting
      *
-     * This feature is not implemented
-     *
+     * @param sortMethod the sorting method selected
      */
-    public void deleteAllTask() {
-        mTaskRepository.deleteAllTask();
-    }
-
-    /**
-     * Insert project.
-     *
-     * This feature is not implemented
-     *
-     * @param project the project
-     */
-    public void insertProject(Project project) {
-        mProjectRepository.insert(project);
-    }
-
-    /**
-     * Delete project.
-     *
-     * This feature is not implemented
-     *
-     * @param project the project
-     */
-    public void deleteProject(Project project) {
-        mProjectRepository.delete(project);
-    }
-
-    /**
-     * Gets all projects they are in database on livedata
-     *
-     * @return the all projects on livedata
-     */
-    public LiveData<List<Project>> getAllProjectsLivedata() {
-        return allProjectsLivedata;
-    }
-
-    /**
-     * Gets all tasks livedata.
-     *
-     * @return the all tasks livedata
-     */
-    public LiveData<List<RelationTaskWithProject>> getAllTasksLivedata() {
-        return allTasksLivedata;
-    }
-
-    /**
-     * Gets all tasks livedata az.
-     *
-     * @return the all tasks livedata az
-     */
-    public LiveData<List<RelationTaskWithProject>> getAllTasksLivedataAZ() {
-        return allTasksLivedataAZ;
-    }
-
-    /**
-     * Gets all tasks livedata za.
-     *
-     * @return the all tasks livedata za
-     */
-    public LiveData<List<RelationTaskWithProject>> getAllTasksLivedataZA() {
-        return allTasksLivedataZA;
-    }
-
-    /**
-     * Gets all tasks livedata old.
-     *
-     * @return the all tasks livedata old
-     */
-    public LiveData<List<RelationTaskWithProject>> getAllTasksLivedataOld() {
-        return allTasksLivedataOld;
-    }
-
-    /**
-     * Gets all tasks livedata recent.
-     *
-     * @return the all tasks livedata recent
-     */
-    public LiveData<List<RelationTaskWithProject>> getAllTasksLivedataRecent() {
-        return allTasksLivedataRecent;
-    }
-
-    /**
-     * Gets project repository.
-     *
-     * @return the project repository
-     */
-    public ProjectRepository getProjectRepository() {
-        return mProjectRepository;
-    }
-
-    /**
-     * Gets task repository.
-     *
-     * @return the task repository
-     */
-    public TaskRepository getTaskRepository() {
-        return mTaskRepository;
+    public void setSorting(SortMethod sortMethod) {
+        if (sortMethod != null) { // Useful when clicking on menu icon
+            this.mSortingTypeMutableLiveData.setValue(sortMethod);
+        }
     }
 }

@@ -1,12 +1,10 @@
 package com.cleanup.todoc.ui;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -15,21 +13,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cleanup.todoc.R;
-import com.cleanup.todoc.ViewModelFactory;
 import com.cleanup.todoc.databinding.ActivityMainBinding;
+import com.cleanup.todoc.di.TodocContainer;
+import com.cleanup.todoc.di.ViewModelFactory;
 import com.cleanup.todoc.model.entity.Project;
 import com.cleanup.todoc.model.entity.RelationTaskWithProject;
-import com.cleanup.todoc.model.entity.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 /**
  * <p>Home activity of the application which is displayed when the user opens the app.</p>
@@ -38,21 +37,18 @@ import java.util.List;
  * @author Gaëtan HERFRAY
  */
 public class MainActivity extends AppCompatActivity implements TasksAdapter.DeleteTaskListener {
+
+    // fields
+
     /**
      * List of all projects available in the application
      */
     private Project[] allProjects ;
 
     /**
-     * List of all current tasks of the application
-     */
-    @NonNull
-    private final ArrayList<RelationTaskWithProject> tasks = new ArrayList<>();
-
-    /**
      * The adapter which handles the list of tasks
      */
-    private TasksAdapter adapter = new TasksAdapter(tasks, this);
+    private TasksAdapter adapter;
     /**
      * Dialog to create a new task
      */
@@ -62,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      * The sort method to be used to display tasks
      */
     @NonNull
-    private SortMethod sortMethod = SortMethod.NONE;
+    private Utils.SortMethod mSortingTypes;
     /**
      * EditText that allows user to set the name of a task
      */
@@ -74,37 +70,82 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      */
     @Nullable
     private Spinner dialogSpinner = null;
-
     /**
      * The RecyclerView which displays the list of tasks
      */
-    // Suppress warning is safe because variable is initialized in onCreate
-    @SuppressWarnings("NullableProblems")
     @NonNull
     private RecyclerView listTasks;
 
     /**
      * The TextView displaying the empty state
      */
-    // Suppress warning is safe because variable is initialized in onCreate
-    @SuppressWarnings("NullableProblems")
+
     @NonNull
     private TextView lblNoTasks;
+    /**
+     * Floating action button to add a new task
+     */
+    @Nullable
+    private FloatingActionButton fabAddTask;
 
+    @Nullable
+    private RelationTaskWithProject relationTaskWithProject;
 
     private ActivityMainBinding binding;
     private MainViewModel viewModel;
 
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        // ViewBinding init
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         init();
     }
 
+    /**
+     * Init widgets & listeners
+     */
+    public void init() {
+
+        TodocContainer container = new TodocContainer(getApplication());
+
+        //viewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(
+                container.getProjectRepository(),
+                container.getTaskRepository(),
+                Executors.newSingleThreadExecutor()))
+                .get(MainViewModel.class);
+
+        // RecyclerView for the list of task
+        listTasks = binding.listTasks  ;
+        binding.listTasks.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        listTasks.setAdapter(adapter);
+        listTasks.setHasFixedSize(true);
+
+        binding.fabAddTask.setOnClickListener(view -> showAddTaskAlertDialog());
+
+        viewModel.mSortedListMediatorLiveData.observe(this, new Observer<List<RelationTaskWithProject>>() {
+            @Override
+            public void onChanged(List<RelationTaskWithProject> relationTaskWithProjects) {
+                if (relationTaskWithProjects == null || relationTaskWithProjects.size() == 0) {
+                    binding.lblNoTask.setVisibility(View.VISIBLE);
+                    listTasks.setVisibility(View.GONE);
+                } else {
+                    binding.lblNoTask.setVisibility(View.GONE);
+                    listTasks.setVisibility(View.VISIBLE);
+                    adapter.updateTasks(relationTaskWithProjects);
+                }
+            }
+        });
+
+    }
+
+
+    // Menu configuration
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.actions, menu);
@@ -115,250 +156,54 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        // The sort method to be used to display tasks
+        Utils.SortMethod sortMethod = null;
+
         if (id == R.id.filter_alphabetical) {
-            sortMethod = SortMethod.ALPHABETICAL;
+            sortMethod = Utils.SortMethod.ALPHABETICAL;
         } else if (id == R.id.filter_alphabetical_inverted) {
-            sortMethod = SortMethod.ALPHABETICAL_INVERTED;
+            sortMethod = Utils.SortMethod.ALPHABETICAL_INVERTED;
         } else if (id == R.id.filter_oldest_first) {
-            sortMethod = SortMethod.OLD_FIRST;
+            sortMethod = Utils.SortMethod.OLD_FIRST;
         } else if (id == R.id.filter_recent_first) {
-            sortMethod = SortMethod.RECENT_FIRST;
+            sortMethod = Utils.SortMethod.RECENT_FIRST;
         }
 
-        updateTasks();
+        // Sort method is set in VM which takes care of sorting the list
+        viewModel.setSorting(sortMethod);
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onDeleteTask(RelationTaskWithProject task) {
-        tasks.remove(task);
-        updateTasks();
-    }
-
-    /**
-     * Init methode for widgets
-     */
-    private void init() {
-        viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(MainViewModel.class);
-
-
-        // Floating action button
-
-        // RecyclerView
-        final RecyclerView taskRecyclerview = binding.listTasks;
-        taskRecyclerview.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
-        adapter = new TasksAdapter(tasks,this);
-        taskRecyclerview.setAdapter(adapter);
-        taskRecyclerview.setHasFixedSize(true);
-
-        // Set List and update
-        viewModel.getAllTasksLivedata().observe(this, adapter::updateTasks);
-
-        // Observe the project list (up to date) to populate project spinner
-        viewModel.getAllProjectsLivedata().observe(this, new Observer<List<Project>>() {
-            @Override
-            public void onChanged(List<Project> projects) {
-                allProjects = projects.toArray(new Project[0]);
-            }
-        });
-
-        setContentView(R.layout.activity_main);
-
-        listTasks = findViewById(R.id.list_tasks);
-        lblNoTasks = findViewById(R.id.lbl_no_task);
-
-        listTasks.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        listTasks.setAdapter(adapter);
-
-        findViewById(R.id.fab_add_task).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showAddTaskDialog();
-            }
-        });
-    }
-
-
-    /**
-     * Called when the user clicks on the positive button of the Create Task Dialog.
-     *
-     * @param dialogInterface the current displayed dialog
-     */
-    private void onPositiveButtonClick(DialogInterface dialogInterface) {
-        // If dialog is open
-        if (dialogEditText != null && dialogSpinner != null) {
-            // Get the name of the task
-            String taskName = dialogEditText.getText().toString();
-
-            // Get the selected project to be associated to the task
-            Project taskProject = null;
-            if (dialogSpinner.getSelectedItem() instanceof Project) {
-                taskProject = (Project) dialogSpinner.getSelectedItem();
-            }
-
-            // If a name has not been set
-            if (taskName.trim().isEmpty()) {
-                dialogEditText.setError(getString(R.string.empty_task_name));
-            }
-            // If both project and name of the task have been set
-            else if (taskProject != null) {
-                // TODO: Replace this by id of persisted task
-                long id = (long) (Math.random() * 50000);
-
-
-                Task task = new Task(
-                        id,
-                        taskProject.getId(),
-                        taskName,
-                        new Date().getTime()
-                );
-
-                addTask(task);
-
-                dialogInterface.dismiss();
-            }
-            // If name has been set, but project has not been set (this should never occur)
-            else {
-                dialogInterface.dismiss();
-            }
-        }
-        // If dialog is aloready closed
-        else {
-            dialogInterface.dismiss();
-        }
     }
 
     /**
      * Shows the Dialog for adding a Task
      */
-    private void showAddTaskDialog() {
-        final AlertDialog dialog = getAddTaskDialog();
+    private void showAddTaskAlertDialog() {
 
-        dialog.show();
-
-        dialogEditText = dialog.findViewById(R.id.txt_task_name);
-        dialogSpinner = dialog.findViewById(R.id.project_spinner);
-
-        populateDialogSpinner();
+        FragmentManager fm = getSupportFragmentManager();
+        AddTaskDialogFragment dialog = AddTaskDialogFragment.newInstance();
+        dialog.show(fm, "add task");
     }
 
+
     /**
-     * Adds the given task to the list of created tasks.
+     * Called when task item is long clicked
      *
-     * @param task the task to be added to the list
+     * @param taskId the task that needs to be edited
      */
-    private void addTask(@NonNull Task task) {
-        //tasks.add(task);
-        updateTasks();
-    }
-
-    /**
-     * Updates the list of tasks in the UI
-     */
-    private void updateTasks() {
-        if (tasks.size() == 0) {
-            lblNoTasks.setVisibility(View.VISIBLE);
-            listTasks.setVisibility(View.GONE);
-        } else {
-            lblNoTasks.setVisibility(View.GONE);
-            listTasks.setVisibility(View.VISIBLE);
-            /*switch (sortMethod) {
-                case ALPHABETICAL:
-                    Collections.sort(tasks, new Task.TaskAZComparator());
-                    break;
-                case ALPHABETICAL_INVERTED:
-                    Collections.sort(tasks, new Task.TaskZAComparator());
-                    break;
-                case RECENT_FIRST:
-                    Collections.sort(tasks, new Task.TaskRecentComparator());
-                    break;
-                case OLD_FIRST:
-                    Collections.sort(tasks, new Task.TaskOldComparator());
-                    break;
-
-            }*/
-            adapter.updateTasks(tasks);
-        }
-    }
-
-    /**
-     * Returns the dialog allowing the user to create a new task.
-     *
-     * @return the dialog allowing the user to create a new task
-     */
-    @NonNull
-    private AlertDialog getAddTaskDialog() {
-        final AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this, R.style.Dialog);
-
-        alertBuilder.setTitle(R.string.add_task);
-        alertBuilder.setView(R.layout.dialog_add_task);
-        alertBuilder.setPositiveButton(R.string.add, null);
-        alertBuilder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                dialogEditText = null;
-                dialogSpinner = null;
-                dialog = null;
-            }
-        });
-
-        dialog = alertBuilder.create();
-
-        // This instead of listener to positive button in order to avoid automatic dismiss
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-
-                Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                button.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View view) {
-                        onPositiveButtonClick(dialog);
-                    }
-                });
-            }
-        });
-
-        return dialog;
+    @Override
+    public void onDeleteTask(int taskId) {
+        viewModel.deleteTaskById(taskId);
     }
 
     /**
      * Sets the data of the Spinner with projects to associate to a new task
      */
     private void populateDialogSpinner() {
-        final ArrayAdapter<Project> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, allProjects);
+        final ArrayAdapter<Project> adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, allProjects);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         if (dialogSpinner != null) {
             dialogSpinner.setAdapter(adapter);
         }
-    }
-
-    /**
-     * List of all possible sort methods for task
-     */
-    private enum SortMethod {
-        /**
-         * Sort alphabetical by name
-         */
-        ALPHABETICAL,
-        /**
-         * Inverted sort alphabetical by name
-         */
-        ALPHABETICAL_INVERTED,
-        /**
-         * Lastly created first
-         */
-        RECENT_FIRST,
-        /**
-         * First created first
-         */
-        OLD_FIRST,
-        /**
-         * No sort
-         */
-        NONE
     }
 }

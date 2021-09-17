@@ -15,31 +15,31 @@ public class Project {
      */
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    private long id;
+    private long projectId;
 
     /**
      * The name of the project
      */
     @NonNull
     @ColumnInfo(name = "name")
-    private final String name;
+    private final String projectName;
 
     /**
      * The hex (ARGB) code of the color associated to the project
      */
     @ColorInt
     @ColumnInfo(name = "color")
-    private final int color;
+    private final int projectColor;
 
     /**
      * Instantiates a new Project.
      *
-     * @param name  the name of the project to set
-     * @param color the hex (ARGB) code of the color associated to the project to set
+     * @param projectName  the name of the project to set
+     * @param projectColor the hex (ARGB) code of the color associated to the project to set
      */
-    public Project(@NonNull String name, @ColorInt int color) {
-        this.name = name;
-        this.color = color;
+    public Project(@NonNull String projectName, @ColorInt int projectColor) {
+        this.projectName = projectName;
+        this.projectColor = projectColor;
     }
 
 
@@ -48,8 +48,8 @@ public class Project {
      *
      * @return the unique identifier of the project
      */
-    public long getId() {
-        return id;
+    public long getProjectId() {
+        return projectId;
     }
 
     /**
@@ -57,8 +57,8 @@ public class Project {
      *
      * @param id the id of the project
      */
-    public void setId(long id){
-        this.id = id;
+    public void setProjectId(long id){
+        this.projectId = id;
     }
 
     /**
@@ -67,8 +67,8 @@ public class Project {
      * @return the name of the project
      */
     @NonNull
-    public String getName() {
-        return name;
+    public String getProjectName() {
+        return projectName;
     }
 
     /**
@@ -77,14 +77,14 @@ public class Project {
      * @return the hex (ARGB) code of the color associated to the project
      */
     @ColorInt
-    public int getColor() {
-        return color;
+    public int getProjectColor() {
+        return projectColor;
     }
 
     @Override
     @NonNull
     public String toString() {
-        return getName();
+        return getProjectName();
     }
 
     @Override
@@ -94,8 +94,8 @@ public class Project {
 
         Project project = (Project) o;
 
-        if (getId() != project.getId()) return false;
-        if (getColor() != project.getColor()) return false;
-        return getName().equals(project.getName());
+        if (getProjectId() != project.getProjectId()) return false;
+        if (getProjectColor() != project.getProjectColor()) return false;
+        return getProjectName().equals(project.getProjectName());
     }
 }

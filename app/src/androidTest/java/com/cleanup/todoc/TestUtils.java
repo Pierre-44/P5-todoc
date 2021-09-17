@@ -1,21 +1,10 @@
 package com.cleanup.todoc;
 
-import androidx.annotation.IdRes;
-import androidx.test.espresso.PerformException;
-import androidx.test.espresso.UiController;
-import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.matcher.ViewMatchers;
-import androidx.test.espresso.util.HumanReadables;
-import androidx.recyclerview.widget.RecyclerView;
-import android.view.View;
-
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
-
 /**
  * Created by dannyroa on 5/9/15.
  */
 public class TestUtils {
+    /*
 
     public static <VH extends RecyclerView.ViewHolder> ViewAction actionOnItemViewAtPosition(int position,
                                                                                              @IdRes
@@ -105,5 +94,7 @@ public class TestUtils {
             recyclerView.scrollToPosition(this.position);
         }
     }
+
+     */
 
 }

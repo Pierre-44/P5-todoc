@@ -5,7 +5,9 @@ import android.app.Application;
 import androidx.lifecycle.LiveData;
 
 import com.cleanup.todoc.db.TodocDatabase;
+import com.cleanup.todoc.model.dao.ProjectDao;
 import com.cleanup.todoc.model.dao.TaskDao;
+import com.cleanup.todoc.model.entity.Project;
 import com.cleanup.todoc.model.entity.RelationTaskWithProject;
 import com.cleanup.todoc.model.entity.Task;
 
@@ -20,9 +22,11 @@ public class TaskRepository {
 
     //fields
     private final TaskDao mTaskDao;
+    private final ProjectDao mProjectDao;
     private final Executor doInBackground;
 
-    public final LiveData<List<RelationTaskWithProject>> allTasksLivedata;
+    private LiveData<List<Project>> allProjects;
+    public final LiveData<List<RelationTaskWithProject>> allTasks;
     public final LiveData<List<RelationTaskWithProject>> allTasksLivedataAZ;
     public final LiveData<List<RelationTaskWithProject>> allTasksLivedataZA;
     public final LiveData<List<RelationTaskWithProject>> allTasksLivedataOld;
@@ -33,7 +37,9 @@ public class TaskRepository {
 
         TodocDatabase todocDatabase = TodocDatabase.getInstance(application);
         mTaskDao = todocDatabase.mTaskDao();
-        allTasksLivedata = mTaskDao.getAllTasks();
+        mProjectDao = todocDatabase.mProjectDao();
+        allProjects = mProjectDao.getAllProjects();
+        allTasks = mTaskDao.getAllTasks();
         allTasksLivedataAZ = mTaskDao.getAllTasksByNameAZ();
         allTasksLivedataZA = mTaskDao.getAllTasksByNameZA();
         allTasksLivedataOld = mTaskDao.getAllTasksByTimeStampOld();
@@ -42,34 +48,41 @@ public class TaskRepository {
     }
     // methods of interface
 
+    public void insert(Task task){
+        mTaskDao.insert(task);
+    }
+
+    public void deleteTaskById(int id){
+        mTaskDao.deleteTaskById(id);
+    }
+
+
+    /*
     public void insert(Task task) {
         doInBackground.execute(() -> mTaskDao.insert(task));
     }
 
-
-
-    // not used at the moment
     public void delete(Task task) {
-        doInBackground.execute(new Runnable() {
-            @Override
-            public void run() {
-                mTaskDao.delete(task);
-            }
-        });
+        doInBackground.execute(() -> mTaskDao.delete(task));
     }
 
-    public void deleteTask(Task task) {
-        //new DeleteTaskAsyncTask(mTaskDao).execute(task);
+    public void deleteTaskByID(int taskId) {
+        mTaskDao.deleteTaskById(taskId);
     }
-    // not used at the moment
+
+    public void update(Task task) {
+        doInBackground.execute(() -> mTaskDao.update(task));
+    }
+
     public void deleteAllTask() {
-       // new DeleteAllTasksAsyncTask(mTaskDao).execute();
+        doInBackground.execute(mTaskDao::deleteAllTasks);
     }
+*/
 
-    // getters
+    // getter
 
-    public LiveData<List<RelationTaskWithProject>> getAllTasksLivedata() {
-        return allTasksLivedata;
+    public LiveData<List<RelationTaskWithProject>> getAllTasks() {
+        return allTasks;
     }
 
     public LiveData<List<RelationTaskWithProject>> getAllTasksLivedataAZ() {

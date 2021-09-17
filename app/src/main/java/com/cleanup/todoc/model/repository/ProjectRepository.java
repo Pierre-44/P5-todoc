@@ -33,7 +33,6 @@ public class ProjectRepository {
     }
 
     // methods of interface
-
     public void insert(Project project) {
         doInBackground.execute(()-> mProjectDao.insert(project));
     }
@@ -43,9 +42,9 @@ public class ProjectRepository {
     }
 
     // getter
-
     public LiveData<List<Project>> getAllProjects() {
         return allProjects;
     }
+
 }
 

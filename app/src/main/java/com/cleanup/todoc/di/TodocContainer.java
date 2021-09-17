@@ -20,6 +20,11 @@ public class TodocContainer {
         mTaskRepository = new TaskRepository(application);
     }
 
-    public ProjectRepository getProjectRepository() {return mProjectRepository;}
-    public TaskRepository getTaskRepository() {return mTaskRepository;}
+    public ProjectRepository getProjectRepository() {
+        return mProjectRepository;
+    }
+
+    public TaskRepository getTaskRepository() {
+        return mTaskRepository;
+    }
 }

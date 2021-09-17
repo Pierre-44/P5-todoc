@@ -6,6 +6,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
+import androidx.room.Update;
 
 import com.cleanup.todoc.model.entity.RelationTaskWithProject;
 import com.cleanup.todoc.model.entity.Task;
@@ -24,9 +25,15 @@ public interface TaskDao {
     @Delete
     void delete(Task task);
 
+    @Update
+    void update(Task task);
 
     @Query("DELETE FROM task_table")
     void deleteAllTasks();
+
+    @Transaction
+    @Query ("DELETE FROM task_table WHERE id = :taskId")
+    void deleteTaskById(int taskId);
 
     @Transaction
     @Query("SELECT * FROM task_table ORDER BY id ")
@@ -47,5 +54,6 @@ public interface TaskDao {
     @Transaction
     @Query("SELECT * FROM task_table ORDER BY name DESC")
     LiveData<List<RelationTaskWithProject>> getAllTasksByNameZA();
+
 
 }

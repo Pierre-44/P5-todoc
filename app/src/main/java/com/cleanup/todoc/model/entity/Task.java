@@ -20,7 +20,7 @@ public class Task {
      */
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    private long id;
+    private long taskId;
     /**
      * The unique identifier of the project associated to the task
      * and add to db index
@@ -31,7 +31,7 @@ public class Task {
      * The name of the task
      */
     @ColumnInfo(name = "name")
-    private String name;
+    private String taskName;
     /**
      * The timestamp when the task has been created
      */
@@ -42,15 +42,15 @@ public class Task {
     /**
      * Instantiates a new Task.
      *
-     * @param id                the unique identifier of the task to set
+     * @param taskId                the unique identifier of the task to set
      * @param projectId         the unique identifier of the project associated to the task to set
-     * @param name              the name of the task to set
+     * @param taskName              the name of the task to set
      * @param creationTimestamp the timestamp when the task has been created to set
      */
-    public Task(long id, long projectId, @NonNull String name, long creationTimestamp) {
-        this.setId(id);
+    public Task(long taskId, long projectId, @NonNull String taskName, long creationTimestamp) {
+        this.setTaskId(taskId);
         this.setProjectId(projectId);
-        this.setName(name);
+        this.setTaskName(taskName);
         this.setCreationTimestamp(creationTimestamp);
     }
 
@@ -59,8 +59,8 @@ public class Task {
      *
      * @return the unique identifier of the task
      */
-    public long getId() {
-        return id;
+    public long getTaskId() {
+        return taskId;
     }
 
     /**
@@ -68,8 +68,8 @@ public class Task {
      *
      * @param id the unique identifier of the task to set
      */
-    public void setId(long id) {
-        this.id = id;
+    public void setTaskId(long id) {
+        this.taskId = id;
     }
 
     /**
@@ -78,17 +78,17 @@ public class Task {
      * @return the name of the task
      */
     @NonNull
-    public String getName() {
-        return name;
+    public String getTaskName() {
+        return taskName;
     }
 
     /**
      * Sets the name of the task.
      *
-     * @param name the name of the task to set
+     * @param taskName the name of the task to set
      */
-    private void setName(@NonNull String name) {
-        this.name = name;
+    private void setTaskName(@NonNull String taskName) {
+        this.taskName = taskName;
     }
 
     /**
@@ -132,13 +132,14 @@ public class Task {
         if (this == o) return true;
         if (!(o instanceof Task)) return false;
         Task task = (Task) o;
-        return id == task.id && projectId == task.projectId && creationTimestamp == task.creationTimestamp && Objects.equals(name, task.name);
+        return taskId == task.taskId && projectId == task.projectId && creationTimestamp == task.creationTimestamp && Objects.equals(taskName, task.taskName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, projectId, name, creationTimestamp);
+        return Objects.hash(taskId, projectId, taskName, creationTimestamp);
     }
+
 
     //--------------------------------------------------
     // Task Comparator
@@ -147,40 +148,41 @@ public class Task {
     /**
      * Comparator to sort task from A to Z
      */
-    public static class TaskAZComparator implements Comparator<Task> {
+    public static class TaskAZComparator implements Comparator<RelationTaskWithProject> {
         @Override
-        public int compare(Task left, Task right) {
-            return left.name.compareTo(right.name);
+        public int compare(RelationTaskWithProject left, RelationTaskWithProject right) {
+            return left.getTask().getTaskName().compareTo(right.getTask().getTaskName());
         }
     }
 
     /**
      * Comparator to sort task from Z to A
      */
-    public static class TaskZAComparator implements Comparator<Task> {
+    public static class TaskZAComparator implements Comparator<RelationTaskWithProject> {
         @Override
-        public int compare(Task left, Task right) {
-            return right.name.compareTo(left.name);
+        public int compare(RelationTaskWithProject left, RelationTaskWithProject right) {
+            return right.getTask().getTaskName().compareTo(left.getTask().getTaskName());
         }
     }
 
     /**
      * Comparator to sort task from last created to first created
      */
-    public static class TaskRecentComparator implements Comparator<Task> {
+    public static class TaskRecentComparator implements Comparator<RelationTaskWithProject> {
         @Override
-        public int compare(Task left, Task right) {
-            return (int) (right.creationTimestamp - left.creationTimestamp);
+        public int compare(RelationTaskWithProject left, RelationTaskWithProject right) {
+            return (int) (right.getTask().getCreationTimestamp() - left.getTask().getCreationTimestamp());
         }
+
     }
 
     /**
      * Comparator to sort task from first created to last created
      */
-    public static class TaskOldComparator implements Comparator<Task> {
+    public static class TaskOldComparator implements Comparator<RelationTaskWithProject> {
         @Override
-        public int compare(Task left, Task right) {
-            return (int) (left.creationTimestamp - right.creationTimestamp);
+        public int compare(RelationTaskWithProject left, RelationTaskWithProject right) {
+            return (int) (left.getTask().getCreationTimestamp() - right.getTask().getCreationTimestamp());
         }
     }
 }
