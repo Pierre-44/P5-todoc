@@ -41,7 +41,7 @@ ext {
     runnerTestingVersion = '1.4.0'
     androidxJunitVersion = '1.1.2'
     androidTestUtil = '1.4.0'
-
+    runnerVersion = '1.1.O'
 }
 
 

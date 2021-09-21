@@ -153,6 +153,8 @@ public class Task {
         public int compare(RelationTaskWithProject left, RelationTaskWithProject right) {
             return left.getTask().getTaskName().compareTo(right.getTask().getTaskName());
         }
+
+
     }
 
     /**

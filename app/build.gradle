@@ -49,7 +49,6 @@ android {
 }
 dependencies {
     implementation "androidx.appcompat:appcompat:$rootProject.appCompatVersion"
-
     // Dependencies for working with Architecture components
     // You'll probably have to update the version numbers in build.gradle (Project)
 
@@ -57,7 +56,8 @@ dependencies {
     // Room components
     //--------------------------------------------------
     implementation "androidx.room:room-runtime:$rootProject.roomVersion"
-    implementation 'org.jetbrains:annotations:15.0'
+    implementation 'org.jetbrains:annotations:22.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
     annotationProcessor "androidx.room:room-compiler:$rootProject.roomVersion"
     androidTestImplementation "androidx.room:room-testing:$rootProject.roomVersion"
 
@@ -78,6 +78,7 @@ dependencies {
     // Unit Testing
     //--------------------------------------------------
     testImplementation "junit:junit:$rootProject.junitVersion"
+    androidTestImplementation "androidx.test:runner:$rootProject.runnerVersion"
     androidTestImplementation "androidx.arch.core:core-testing:$rootProject.coreTestingVersion"
     androidTestImplementation("androidx.test.espresso:espresso-core:$rootProject.espressoVersion", {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -87,9 +88,9 @@ dependencies {
     // Instrumental Testing
     //--------------------------------------------------
     androidTestImplementation "androidx.test:core:$rootProject.coreTestingVersion"
-    androidTestImplementation "androidx.test:espresso:$rootProject.espressoVersion"
+    androidTestImplementation "androidx.test:espresso:$espressoVersion"
     androidTestImplementation "androidx.test:espresso:espresso-core:$rootProject.espressoCoreVersion"
-    androidTestImplementation "androidx.test.ext:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$rootProject.junitVersion"
     androidTestUtil "androidx.test:orchestrator:1.4.0"
 
 }

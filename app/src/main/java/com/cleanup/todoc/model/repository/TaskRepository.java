@@ -1,6 +1,6 @@
 package com.cleanup.todoc.model.repository;
 
-import android.app.Application;
+import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 
@@ -33,9 +33,9 @@ public class TaskRepository {
     public final LiveData<List<RelationTaskWithProject>> allTasksLivedataRecent;
 
     // Constructor
-    public TaskRepository(Application application) {
+    public TaskRepository(Context context) {
 
-        TodocDatabase todocDatabase = TodocDatabase.getInstance(application);
+        TodocDatabase todocDatabase = TodocDatabase.getInstance(context);
         mTaskDao = todocDatabase.mTaskDao();
         mProjectDao = todocDatabase.mProjectDao();
         allProjects = mProjectDao.getAllProjects();
@@ -48,16 +48,16 @@ public class TaskRepository {
     }
     // methods of interface
 
-    public void insert(Task task){
-        mTaskDao.insert(task);
-    }
+    //public void insert(Task task){
+    //    mTaskDao.insert(task);
+    //}
 
     public void deleteTaskById(int id){
         mTaskDao.deleteTaskById(id);
     }
 
 
-    /*
+
     public void insert(Task task) {
         doInBackground.execute(() -> mTaskDao.insert(task));
     }
@@ -77,7 +77,7 @@ public class TaskRepository {
     public void deleteAllTask() {
         doInBackground.execute(mTaskDao::deleteAllTasks);
     }
-*/
+
 
     // getter
 

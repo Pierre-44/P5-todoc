@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,7 +12,6 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.cleanup.todoc.R;
@@ -67,13 +65,10 @@ public class AddTaskDialogFragment extends DialogFragment {
                 .get(AddTaskViewModel.class);
 
         //Get projects from our view model
-        mAddTaskViewModel.getProjects().observe(this, new Observer<List<Project>>() {
-            @Override
-            public void onChanged(List<Project> projects) {
-                allProjects = projects;
-                if (dialogSpinner != null){
-                    populateDialogSpinner(projects);
-                }
+        mAddTaskViewModel.getProjects().observe(this, projects -> {
+            allProjects = projects;
+            if (dialogSpinner != null){
+                populateDialogSpinner(projects);
             }
         });
 
@@ -87,12 +82,7 @@ public class AddTaskDialogFragment extends DialogFragment {
         alertBuilder.setTitle(R.string.add_task);
         alertBuilder.setView(R.layout.dialog_add_task);
         alertBuilder.setPositiveButton(R.string.add, null);
-        alertBuilder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                dialog.dismiss();
-            }
-        });
+        alertBuilder.setOnDismissListener(dialogInterface -> dialog.dismiss());
 
         dialog = alertBuilder.create();
         dialog.show();
@@ -107,12 +97,7 @@ public class AddTaskDialogFragment extends DialogFragment {
         populateDialogSpinner(allProjects);
 
         Button button = dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onPositiveButtonClick(dialog);
-            }
-        });
+        button.setOnClickListener(view -> onPositiveButtonClick(dialog));
 
         return dialog;
     }
@@ -145,6 +130,7 @@ public class AddTaskDialogFragment extends DialogFragment {
 
             // Get the selected project to be associated to the task
             Project taskProject = null;
+
             if (dialogSpinner.getSelectedItem() instanceof Project) {
                 taskProject = (Project) dialogSpinner.getSelectedItem();
             }
@@ -155,11 +141,9 @@ public class AddTaskDialogFragment extends DialogFragment {
             }
             // If both project and name of the task have been set
             else if (taskProject != null) {
-                // TODO: Replace this by id of persisted task
-                long id = (long) (Math.random() * 50000);
 
                 Task task = new Task(
-                        id,
+                        getActivity().getTaskId(),
                         taskProject.getProjectId(),
                         taskName,
                         new Date().getTime()
@@ -174,7 +158,7 @@ public class AddTaskDialogFragment extends DialogFragment {
                 dialogInterface.dismiss();
             }
         }
-        // If dialog is aloready closed
+        // If dialog is already closed
         else {
             dialogInterface.dismiss();
         }

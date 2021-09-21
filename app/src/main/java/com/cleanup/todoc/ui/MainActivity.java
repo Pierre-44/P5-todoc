@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -14,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,7 +25,6 @@ import com.cleanup.todoc.model.entity.Project;
 import com.cleanup.todoc.model.entity.RelationTaskWithProject;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.List;
 import java.util.concurrent.Executors;
 
 /**
@@ -128,17 +125,15 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
         binding.fabAddTask.setOnClickListener(view -> showAddTaskAlertDialog());
 
-        viewModel.mSortedListMediatorLiveData.observe(this, new Observer<List<RelationTaskWithProject>>() {
-            @Override
-            public void onChanged(List<RelationTaskWithProject> relationTaskWithProjects) {
-                if (relationTaskWithProjects == null || relationTaskWithProjects.size() == 0) {
-                    binding.lblNoTask.setVisibility(View.VISIBLE);
-                    listTasks.setVisibility(View.GONE);
-                } else {
-                    binding.lblNoTask.setVisibility(View.GONE);
-                    listTasks.setVisibility(View.VISIBLE);
-                    adapter.updateTasks(relationTaskWithProjects);
-                }
+        // RecyclerView for the list of task
+        viewModel.mSortedListMediatorLiveData.observe(this, relationTaskWithProjects -> {
+            if (relationTaskWithProjects == null || relationTaskWithProjects.size() == 0) {
+                binding.lblNoTask.setVisibility(View.VISIBLE);
+                listTasks.setVisibility(View.GONE);
+            } else {
+                binding.lblNoTask.setVisibility(View.GONE);
+                listTasks.setVisibility(View.VISIBLE);
+                adapter.updateTasks(relationTaskWithProjects);
             }
         });
 
@@ -168,7 +163,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         } else if (id == R.id.filter_recent_first) {
             sortMethod = Utils.SortMethod.RECENT_FIRST;
         }
-
         // Sort method is set in VM which takes care of sorting the list
         viewModel.setSorting(sortMethod);
 
@@ -196,14 +190,4 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         viewModel.deleteTaskById(taskId);
     }
 
-    /**
-     * Sets the data of the Spinner with projects to associate to a new task
-     */
-    private void populateDialogSpinner() {
-        final ArrayAdapter<Project> adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, allProjects);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        if (dialogSpinner != null) {
-            dialogSpinner.setAdapter(adapter);
-        }
-    }
 }
