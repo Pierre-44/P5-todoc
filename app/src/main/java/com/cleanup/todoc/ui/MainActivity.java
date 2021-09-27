@@ -23,6 +23,7 @@ import com.cleanup.todoc.di.TodocContainer;
 import com.cleanup.todoc.di.ViewModelFactory;
 import com.cleanup.todoc.model.entity.Project;
 import com.cleanup.todoc.model.entity.RelationTaskWithProject;
+import com.cleanup.todoc.model.entity.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.concurrent.Executors;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     /**
      * The adapter which handles the list of tasks
      */
-    private TasksAdapter adapter;
+    private final TasksAdapter adapter = new TasksAdapter(this);
     /**
      * Dialog to create a new task
      */
@@ -110,20 +111,20 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
         TodocContainer container = new TodocContainer(getApplication());
 
+        // RecyclerView for the list of task
+        listTasks = binding.listTasks  ;
+        binding.listTasks.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        listTasks.setAdapter(adapter);
+        listTasks.setHasFixedSize(true);
+        // Onclick Listner on FAB to add task
+        binding.fabAddTask.setOnClickListener(view -> showAddTaskAlertDialog());
+
         //viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(
                 container.getProjectRepository(),
                 container.getTaskRepository(),
                 Executors.newSingleThreadExecutor()))
                 .get(MainViewModel.class);
-
-        // RecyclerView for the list of task
-        listTasks = binding.listTasks  ;
-        binding.listTasks.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        listTasks.setAdapter(adapter);
-        listTasks.setHasFixedSize(true);
-
-        binding.fabAddTask.setOnClickListener(view -> showAddTaskAlertDialog());
 
         // RecyclerView for the list of task
         viewModel.mSortedListMediatorLiveData.observe(this, relationTaskWithProjects -> {
@@ -136,9 +137,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
                 adapter.updateTasks(relationTaskWithProjects);
             }
         });
-
     }
-
 
     // Menu configuration
     @Override
@@ -179,6 +178,10 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         dialog.show(fm, "add task");
     }
 
+    public void insertTask(Task task) {
+        viewModel.insertTask(task);
+    }
+
 
     /**
      * Called when task item is long clicked
@@ -186,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      * @param taskId the task that needs to be edited
      */
     @Override
-    public void onDeleteTask(int taskId) {
+    public void onDeleteTask(long taskId) {
         viewModel.deleteTaskById(taskId);
     }
 

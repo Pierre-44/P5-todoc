@@ -29,7 +29,7 @@ public class ProjectRepository {
         TodocDatabase todocDatabase = TodocDatabase.getInstance(application);
         mProjectDao = todocDatabase.mProjectDao();
         allProjects = mProjectDao.getAllProjects();
-        doInBackground = Executors.newFixedThreadPool(2);
+        doInBackground = Executors.newFixedThreadPool(3);
     }
 
     // methods of interface

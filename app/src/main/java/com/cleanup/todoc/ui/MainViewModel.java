@@ -18,7 +18,6 @@ import com.cleanup.todoc.model.repository.TaskRepository;
 import com.cleanup.todoc.ui.Utils.SortMethod;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -67,6 +66,7 @@ public class MainViewModel extends ViewModel {
 
 
         //Adding data as source to mediator
+        mListTaskLiveData = mTaskRepository.getAllTasks();
         mSortedListMediatorLiveData.addSource(mListTaskLiveData, new Observer<List<RelationTaskWithProject>>() {
             @Override
             public void onChanged(List<RelationTaskWithProject> relationTaskWithProjects) {
@@ -88,6 +88,7 @@ public class MainViewModel extends ViewModel {
     /**
      * Sort the task list depending on active sorting method and set related live data and
      * launch view state setting
+     * @return
      */
     private List<RelationTaskWithProject> combineDataAndSortingType(LiveData<List<RelationTaskWithProject>> tasksLiveData, MutableLiveData<SortMethod> sortingTypeLiveData) {
 
@@ -101,26 +102,33 @@ public class MainViewModel extends ViewModel {
             case NONE:
                 return tasksLiveData.getValue();
             case ALPHABETICAL:
-                Collections.sort(listToSort, new Task.TaskAZComparator());
+                //Collections.sort(listToSort, new RelationTaskWithProject);
                 return listToSort;
             case ALPHABETICAL_INVERTED:
-                Collections.sort(listToSort, new Task.TaskZAComparator());
+                //Collections.sort(listToSort, new RelationTaskWithProject);
                 return listToSort;
             case OLD_FIRST:
-                Collections.sort(listToSort, new Task.TaskOldComparator());
+                //Collections.sort(listToSort, new RelationTaskWithProject);
                 return listToSort;
             case RECENT_FIRST:
-                Collections.sort(listToSort, new Task.TaskRecentComparator());
+                //Collections.sort(listToSort, new RelationTaskWithProject);
                 return listToSort;
             default:
                 return listToSort;
         }
     }
 
-    public void deleteTaskById(final int id){
-
+    public void deleteTaskById(final long id){
+        mTaskRepository.deleteTaskById(id);
     }
 
+    public void insertProject(Project project){
+        mProjectRepository.insert(project);
+    }
+
+    public void insertTask(Task task){
+        mTaskRepository.insert(task);
+    }
 
     /**
      * Set the sorting method for the task list in the mutable live data and launch the sorting

@@ -37,7 +37,10 @@ public class Project {
      * @param projectName  the name of the project to set
      * @param projectColor the hex (ARGB) code of the color associated to the project to set
      */
-    public Project(@NonNull String projectName, @ColorInt int projectColor) {
+    public Project(
+            @NonNull String projectName,
+            @ColorInt int projectColor
+    ) {
         this.projectName = projectName;
         this.projectColor = projectColor;
     }

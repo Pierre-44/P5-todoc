@@ -26,11 +26,11 @@ public class TaskRepository {
     private final Executor doInBackground;
 
     private LiveData<List<Project>> allProjects;
-    public final LiveData<List<RelationTaskWithProject>> allTasks;
-    public final LiveData<List<RelationTaskWithProject>> allTasksLivedataAZ;
-    public final LiveData<List<RelationTaskWithProject>> allTasksLivedataZA;
-    public final LiveData<List<RelationTaskWithProject>> allTasksLivedataOld;
-    public final LiveData<List<RelationTaskWithProject>> allTasksLivedataRecent;
+    public LiveData<List<RelationTaskWithProject>> allTasks;
+    public LiveData<List<RelationTaskWithProject>> allTasksLivedataAZ;
+    public LiveData<List<RelationTaskWithProject>> allTasksLivedataZA;
+    public LiveData<List<RelationTaskWithProject>> allTasksLivedataOld;
+    public LiveData<List<RelationTaskWithProject>> allTasksLivedataRecent;
 
     // Constructor
     public TaskRepository(Context context) {
@@ -44,19 +44,10 @@ public class TaskRepository {
         allTasksLivedataZA = mTaskDao.getAllTasksByNameZA();
         allTasksLivedataOld = mTaskDao.getAllTasksByTimeStampOld();
         allTasksLivedataRecent = mTaskDao.getAllTasksByTimeStampRecent();
-        doInBackground = Executors.newFixedThreadPool(4);
+        doInBackground = Executors.newFixedThreadPool(2);
+
     }
     // methods of interface
-
-    //public void insert(Task task){
-    //    mTaskDao.insert(task);
-    //}
-
-    public void deleteTaskById(int id){
-        mTaskDao.deleteTaskById(id);
-    }
-
-
 
     public void insert(Task task) {
         doInBackground.execute(() -> mTaskDao.insert(task));
@@ -66,18 +57,13 @@ public class TaskRepository {
         doInBackground.execute(() -> mTaskDao.delete(task));
     }
 
-    public void deleteTaskByID(int taskId) {
-        mTaskDao.deleteTaskById(taskId);
+    public void deleteTaskById(long taskId) {
+        doInBackground.execute(() -> mTaskDao.deleteTaskById(taskId));
     }
 
     public void update(Task task) {
         doInBackground.execute(() -> mTaskDao.update(task));
     }
-
-    public void deleteAllTask() {
-        doInBackground.execute(mTaskDao::deleteAllTasks);
-    }
-
 
     // getter
 
@@ -100,5 +86,4 @@ public class TaskRepository {
     public LiveData<List<RelationTaskWithProject>> getAllTasksLivedataRecent() {
         return allTasksLivedataRecent;
     }
-
 }

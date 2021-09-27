@@ -33,7 +33,7 @@ public interface TaskDao {
 
     @Transaction
     @Query ("DELETE FROM task_table WHERE id = :taskId")
-    void deleteTaskById(int taskId);
+    void deleteTaskById(long taskId);
 
     @Transaction
     @Query("SELECT * FROM task_table ORDER BY id ")

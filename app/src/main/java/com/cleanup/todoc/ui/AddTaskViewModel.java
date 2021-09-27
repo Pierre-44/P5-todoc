@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.cleanup.todoc.model.entity.Project;
-import com.cleanup.todoc.model.entity.RelationTaskWithProject;
 import com.cleanup.todoc.model.entity.Task;
 import com.cleanup.todoc.model.repository.ProjectRepository;
 import com.cleanup.todoc.model.repository.TaskRepository;
@@ -22,8 +21,6 @@ public class AddTaskViewModel extends ViewModel {
     private TaskRepository mTaskRepository;
     private Executor mExecutor;
 
-    private RelationTaskWithProject mRelationTaskWithProject;
-
     private LiveData<List<Project>> mProjects;
 
 
@@ -31,7 +28,6 @@ public class AddTaskViewModel extends ViewModel {
         mProjectRepository = projectRepository;
         mTaskRepository = taskRepository;
         mExecutor = executor;
-
         mProjects = mProjectRepository.getAllProjects();
 
     }
@@ -41,7 +37,12 @@ public class AddTaskViewModel extends ViewModel {
     }
 
     // TODO : resolve insertion of new task not displayed
-    public void insertTask(Task task) {
-        mExecutor.execute(() -> mTaskRepository.insert(task));
+    public void insertTask(final Task task){
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mTaskRepository.insert(task);
+            }
+        });
     }
 }

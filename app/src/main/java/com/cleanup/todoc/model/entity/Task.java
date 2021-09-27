@@ -6,14 +6,14 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
-import java.util.Comparator;
 import java.util.Objects;
 
 @Entity(tableName = "task_table", foreignKeys = {@ForeignKey(
-                entity = Project.class,
-                parentColumns = "id",
-                childColumns = "project_id")
+        entity = Project.class,
+        parentColumns = "id",
+        childColumns = "project_id")
 })
+
 public class Task {
     /**
      * The unique identifier of the task
@@ -42,12 +42,18 @@ public class Task {
     /**
      * Instantiates a new Task.
      *
-     * @param taskId                the unique identifier of the task to set
+     * @param taskId            the unique identifier of the task to set
      * @param projectId         the unique identifier of the project associated to the task to set
-     * @param taskName              the name of the task to set
+     * @param taskName          the name of the task to set
      * @param creationTimestamp the timestamp when the task has been created to set
      */
-    public Task(long taskId, long projectId, @NonNull String taskName, long creationTimestamp) {
+    public Task(
+            long taskId,
+            long projectId,
+            @NonNull String taskName,
+            long creationTimestamp
+    ) {
+
         this.setTaskId(taskId);
         this.setProjectId(projectId);
         this.setTaskName(taskName);
@@ -138,53 +144,5 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hash(taskId, projectId, taskName, creationTimestamp);
-    }
-
-
-    //--------------------------------------------------
-    // Task Comparator
-    //--------------------------------------------------
-
-    /**
-     * Comparator to sort task from A to Z
-     */
-    public static class TaskAZComparator implements Comparator<RelationTaskWithProject> {
-        @Override
-        public int compare(RelationTaskWithProject left, RelationTaskWithProject right) {
-            return left.getTask().getTaskName().compareTo(right.getTask().getTaskName());
-        }
-
-
-    }
-
-    /**
-     * Comparator to sort task from Z to A
-     */
-    public static class TaskZAComparator implements Comparator<RelationTaskWithProject> {
-        @Override
-        public int compare(RelationTaskWithProject left, RelationTaskWithProject right) {
-            return right.getTask().getTaskName().compareTo(left.getTask().getTaskName());
-        }
-    }
-
-    /**
-     * Comparator to sort task from last created to first created
-     */
-    public static class TaskRecentComparator implements Comparator<RelationTaskWithProject> {
-        @Override
-        public int compare(RelationTaskWithProject left, RelationTaskWithProject right) {
-            return (int) (right.getTask().getCreationTimestamp() - left.getTask().getCreationTimestamp());
-        }
-
-    }
-
-    /**
-     * Comparator to sort task from first created to last created
-     */
-    public static class TaskOldComparator implements Comparator<RelationTaskWithProject> {
-        @Override
-        public int compare(RelationTaskWithProject left, RelationTaskWithProject right) {
-            return (int) (left.getTask().getCreationTimestamp() - right.getTask().getCreationTimestamp());
-        }
     }
 }

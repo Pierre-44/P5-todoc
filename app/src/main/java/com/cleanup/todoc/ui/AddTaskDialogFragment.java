@@ -82,7 +82,12 @@ public class AddTaskDialogFragment extends DialogFragment {
         alertBuilder.setTitle(R.string.add_task);
         alertBuilder.setView(R.layout.dialog_add_task);
         alertBuilder.setPositiveButton(R.string.add, null);
-        alertBuilder.setOnDismissListener(dialogInterface -> dialog.dismiss());
+        alertBuilder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                dialog.dismiss();
+            }
+        });
 
         dialog = alertBuilder.create();
         dialog.show();
@@ -143,7 +148,7 @@ public class AddTaskDialogFragment extends DialogFragment {
             else if (taskProject != null) {
 
                 Task task = new Task(
-                        getActivity().getTaskId(),
+                        0,
                         taskProject.getProjectId(),
                         taskName,
                         new Date().getTime()

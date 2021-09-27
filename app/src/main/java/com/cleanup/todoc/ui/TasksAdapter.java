@@ -89,7 +89,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
          *
          * @param taskId the task with project that needs to be deleted
          */
-        void onDeleteTask(int taskId);
+        void onDeleteTask(long taskId);
     }
 
     /**
@@ -140,7 +140,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
             imgDelete = itemView.findViewById(R.id.img_delete);
 
             imgDelete.setOnClickListener(view -> {
-                final int tag = (int) view.getTag();
+                final long tag = (long) view.getTag();
                 TaskViewHolder.this.mDeleteTaskListener.onDeleteTask(tag);
             });
         }
