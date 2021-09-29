@@ -18,6 +18,7 @@ import com.cleanup.todoc.model.repository.TaskRepository;
 import com.cleanup.todoc.ui.Utils.SortMethod;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -102,16 +103,16 @@ public class MainViewModel extends ViewModel {
             case NONE:
                 return tasksLiveData.getValue();
             case ALPHABETICAL:
-                //Collections.sort(listToSort, new RelationTaskWithProject);
+                Collections.sort(listToSort, new RelationTaskWithProject.TaskAZComparator());
                 return listToSort;
             case ALPHABETICAL_INVERTED:
-                //Collections.sort(listToSort, new RelationTaskWithProject);
+                Collections.sort(listToSort, new RelationTaskWithProject.TaskZAComparator());
                 return listToSort;
             case OLD_FIRST:
-                //Collections.sort(listToSort, new RelationTaskWithProject);
+                Collections.sort(listToSort, new RelationTaskWithProject.TaskOldComparator());
                 return listToSort;
             case RECENT_FIRST:
-                //Collections.sort(listToSort, new RelationTaskWithProject);
+                Collections.sort(listToSort, new RelationTaskWithProject.TaskRecentComparator());
                 return listToSort;
             default:
                 return listToSort;

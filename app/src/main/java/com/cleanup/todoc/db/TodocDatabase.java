@@ -57,4 +57,8 @@ public abstract class TodocDatabase extends RoomDatabase {
             instanceDB.mProjectDao().insert(new Project("Projet Circus", 0xFFA3CED2));
         });
     }
+
+    public static TodocDatabase getInstanceDB() {
+        return instanceDB;
+    }
 }
