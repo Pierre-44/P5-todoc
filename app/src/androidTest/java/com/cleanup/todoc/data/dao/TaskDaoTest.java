@@ -10,11 +10,11 @@ import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.cleanup.todoc.utils.LiveDataTestUtils;
 import com.cleanup.todoc.db.TodocDatabase;
 import com.cleanup.todoc.model.dao.TaskDao;
 import com.cleanup.todoc.model.entity.RelationTaskWithProject;
 import com.cleanup.todoc.model.entity.Task;
+import com.cleanup.todoc.utils.LiveDataTestUtils;
 
 import org.junit.After;
 import org.junit.Before;
@@ -53,7 +53,8 @@ public class TaskDaoTest {
     public void createDb(){
         Context context = ApplicationProvider.getApplicationContext();
         mTodocDatabase = Room.inMemoryDatabaseBuilder(context, TodocDatabase.class).build();
-        mTaskDao = TodocDatabase.getInstanceDB().mTaskDao();
+        mTaskDao = mTodocDatabase.mTaskDao();
+        mTaskDao.deleteAllTasks();
     }
 
     @After
@@ -72,14 +73,14 @@ public class TaskDaoTest {
     @Test
     public void insert_one_task() throws InterruptedException {
         // Given
-        Task taskTest1 = new Task(EXPECTED_TASK_ID_1,EXPECTED_PROJECT_ID_1,EXPECTED_TASK_NAME_1, EXPECTED_PROJECT_ID_1);
+        Task taskTest1 = new Task(EXPECTED_TASK_ID_1,EXPECTED_PROJECT_ID_1,EXPECTED_TASK_NAME_1, EXPECTED_TASK_TIMESTAMP_1);
         // When
         mTaskDao.insert(taskTest1);
         List<RelationTaskWithProject> taskList = LiveDataTestUtils.getOrAwaitValue(mTaskDao.getAllTasks());
         // Then
         assertEquals(
                 Collections.singletonList(
-                        new Task(EXPECTED_TASK_ID_1,EXPECTED_PROJECT_ID_1,EXPECTED_TASK_NAME_1, EXPECTED_PROJECT_ID_1)
+                        new Task(EXPECTED_TASK_ID_1,EXPECTED_PROJECT_ID_1,EXPECTED_TASK_NAME_1, EXPECTED_TASK_TIMESTAMP_1)
                 ),
                 taskList
         );
@@ -88,8 +89,8 @@ public class TaskDaoTest {
     @Test
     public void insert_two_task() throws InterruptedException {
         // Given
-        Task taskTest1 = new Task(EXPECTED_TASK_ID_1,EXPECTED_PROJECT_ID_1,EXPECTED_TASK_NAME_1, EXPECTED_PROJECT_ID_1);
-        Task taskTest2 = new Task(EXPECTED_TASK_ID_2,EXPECTED_PROJECT_ID_2,EXPECTED_TASK_NAME_2, EXPECTED_PROJECT_ID_2);
+        Task taskTest1 = new Task(EXPECTED_TASK_ID_1,EXPECTED_PROJECT_ID_1,EXPECTED_TASK_NAME_1, EXPECTED_TASK_TIMESTAMP_1);
+        Task taskTest2 = new Task(EXPECTED_TASK_ID_2,EXPECTED_PROJECT_ID_2,EXPECTED_TASK_NAME_2, EXPECTED_TASK_TIMESTAMP_1);
         // When
         mTaskDao.insert(taskTest1);
         mTaskDao.insert(taskTest2);
@@ -97,11 +98,10 @@ public class TaskDaoTest {
         // Then
         assertEquals(
                 Arrays.asList(
-                        new Task(EXPECTED_TASK_ID_1, EXPECTED_PROJECT_ID_1, EXPECTED_TASK_NAME_1, EXPECTED_PROJECT_ID_1),
-                        new Task(EXPECTED_TASK_ID_2, EXPECTED_PROJECT_ID_2, EXPECTED_TASK_NAME_2, EXPECTED_PROJECT_ID_2)
+                        new Task(EXPECTED_TASK_ID_1, EXPECTED_PROJECT_ID_1, EXPECTED_TASK_NAME_1, EXPECTED_TASK_TIMESTAMP_1),
+                        new Task(EXPECTED_TASK_ID_2, EXPECTED_PROJECT_ID_2, EXPECTED_TASK_NAME_2, EXPECTED_TASK_TIMESTAMP_1)
                 ),
                 taskList
         );
     }
-
 }

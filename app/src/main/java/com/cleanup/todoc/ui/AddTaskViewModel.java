@@ -28,7 +28,7 @@ public class AddTaskViewModel extends ViewModel {
         mProjectRepository = projectRepository;
         mTaskRepository = taskRepository;
         mExecutor = executor;
-        mProjects = mProjectRepository.getAllProjects();
+        mProjects = mProjectRepository.getAllProjectsLiveData();
 
     }
 
@@ -36,13 +36,7 @@ public class AddTaskViewModel extends ViewModel {
         return mProjects;
     }
 
-    // TODO : resolve insertion of new task not displayed
     public void insertTask(final Task task){
-        mExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                mTaskRepository.insert(task);
-            }
-        });
+        mExecutor.execute(() -> mTaskRepository.insert(task));
     }
 }

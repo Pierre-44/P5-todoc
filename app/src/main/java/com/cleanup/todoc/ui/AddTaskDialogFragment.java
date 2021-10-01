@@ -23,6 +23,7 @@ import com.cleanup.todoc.model.entity.Task;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 
 /**
@@ -56,7 +57,7 @@ public class AddTaskDialogFragment extends DialogFragment {
 
         // instancie viewmodel and container
 
-        TodocContainer container = new TodocContainer(getActivity().getApplication());
+        TodocContainer container = new TodocContainer(Objects.requireNonNull(getActivity()).getApplication());
 
         mAddTaskViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(
                 container.getProjectRepository(),
@@ -82,22 +83,13 @@ public class AddTaskDialogFragment extends DialogFragment {
         alertBuilder.setTitle(R.string.add_task);
         alertBuilder.setView(R.layout.dialog_add_task);
         alertBuilder.setPositiveButton(R.string.add, null);
-        alertBuilder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                dialog.dismiss();
-            }
-        });
+        alertBuilder.setOnDismissListener(dialogInterface -> dialog.dismiss());
 
         dialog = alertBuilder.create();
         dialog.show();
 
         dialogEditText = dialog.findViewById(R.id.txt_task_name);
         dialogSpinner = dialog.findViewById(R.id.project_spinner);
-
-        //TODO : how to bind this with viewBinding?
-        //binding.txtTaskName.getText();
-        //binding.projectSpinner.setAdapter();
 
         populateDialogSpinner(allProjects);
 

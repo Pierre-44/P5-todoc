@@ -2,6 +2,7 @@ package com.cleanup.todoc.model.repository;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LiveData;
 
 import com.cleanup.todoc.db.TodocDatabase;
@@ -22,8 +23,8 @@ public class TaskRepository {
 
     //fields
     private final TaskDao mTaskDao;
-    private final ProjectDao mProjectDao;
-    private final Executor doInBackground;
+    private ProjectDao mProjectDao;
+    private Executor doInBackground;
 
     private LiveData<List<Project>> allProjects;
     public LiveData<List<RelationTaskWithProject>> allTasks;
@@ -45,8 +46,14 @@ public class TaskRepository {
         allTasksLivedataOld = mTaskDao.getAllTasksByTimeStampOld();
         allTasksLivedataRecent = mTaskDao.getAllTasksByTimeStampRecent();
         doInBackground = Executors.newFixedThreadPool(2);
-
     }
+
+    @VisibleForTesting
+    public TaskRepository(TaskDao taskDao) {
+        mTaskDao = taskDao;
+        doInBackground = Executors.newFixedThreadPool(2);
+    }
+
     // methods of interface
 
     public void insert(Task task) {
@@ -85,5 +92,10 @@ public class TaskRepository {
 
     public LiveData<List<RelationTaskWithProject>> getAllTasksLivedataRecent() {
         return allTasksLivedataRecent;
+    }
+
+    // setter
+    public void setDoInBackground(Executor doInBackground) {
+        this.doInBackground = doInBackground;
     }
 }

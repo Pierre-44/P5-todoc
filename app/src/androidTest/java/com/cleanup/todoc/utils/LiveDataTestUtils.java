@@ -4,6 +4,9 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
+import com.cleanup.todoc.model.entity.RelationTaskWithProject;
+
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -12,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class LiveDataTestUtils {
 
-    public static <T> T getOrAwaitValue(final LiveData<T> liveData) throws InterruptedException {
+    public static <T> List<RelationTaskWithProject> getOrAwaitValue(final LiveData<T> liveData) throws InterruptedException {
         final Object[] data = new Object[1];
         final CountDownLatch latch = new CountDownLatch(1);
         Observer<T> observer = new Observer<T>() {
@@ -29,6 +32,6 @@ public class LiveDataTestUtils {
             throw new RuntimeException("LiveData value was never set.");
         }
         //noinspection unchecked
-        return (T) data[0];
+        return (List<RelationTaskWithProject>) data[0];
     }
 }

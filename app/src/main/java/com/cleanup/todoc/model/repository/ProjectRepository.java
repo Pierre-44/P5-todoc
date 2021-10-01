@@ -2,6 +2,7 @@ package com.cleanup.todoc.model.repository;
 
 import android.app.Application;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LiveData;
 
 import com.cleanup.todoc.db.TodocDatabase;
@@ -19,16 +20,22 @@ public class ProjectRepository {
 
     //fields
     private final ProjectDao mProjectDao;
-    private final Executor doInBackground;
+    private Executor doInBackground;
 
 
-    private final LiveData<List<Project>> allProjects;
+    private LiveData<List<Project>> allProjects;
 
     // Constructor
     public ProjectRepository(Application application) {
         TodocDatabase todocDatabase = TodocDatabase.getInstance(application);
         mProjectDao = todocDatabase.mProjectDao();
         allProjects = mProjectDao.getAllProjects();
+        doInBackground = Executors.newFixedThreadPool(3);
+    }
+
+    @VisibleForTesting
+    public ProjectRepository(ProjectDao projectDao) {
+        mProjectDao = projectDao;
         doInBackground = Executors.newFixedThreadPool(3);
     }
 
@@ -42,9 +49,13 @@ public class ProjectRepository {
     }
 
     // getter
-    public LiveData<List<Project>> getAllProjects() {
+    public LiveData<List<Project>> getAllProjectsLiveData() {
         return allProjects;
     }
 
+    // setter
+    public void setDoInBackground(Executor doInBackground) {
+        this.doInBackground = doInBackground;
+    }
 }
 

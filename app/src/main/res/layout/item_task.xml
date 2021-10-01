@@ -16,7 +16,8 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
         android:src="@drawable/bkg_oval"
-        tools:tint="@sample/tasks.json/data/backgroundTint" />
+        tools:tint="@sample/tasks.json/data/backgroundTint"
+        android:contentDescription="@string/image_view_of_project" />
 
 
     <ImageView
@@ -29,9 +30,10 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
-        android:src="@drawable/ic_delete"
         android:background="?android:attr/selectableItemBackgroundBorderless"
-        app:tint="#DE000000" />
+        android:src="@drawable/ic_delete"
+        app:tint="#DE000000"
+        android:contentDescription="@string/icon_delete" />
 
     <LinearLayout
         android:layout_width="wrap_content"

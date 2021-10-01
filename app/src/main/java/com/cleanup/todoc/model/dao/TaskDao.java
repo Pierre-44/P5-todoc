@@ -32,7 +32,7 @@ public interface TaskDao {
     void deleteAllTasks();
 
     @Transaction
-    @Query ("DELETE FROM task_table WHERE id = :taskId")
+    @Query("DELETE FROM task_table WHERE id = :taskId")
     void deleteTaskById(long taskId);
 
     @Transaction
@@ -54,6 +54,4 @@ public interface TaskDao {
     @Transaction
     @Query("SELECT * FROM task_table ORDER BY name DESC")
     LiveData<List<RelationTaskWithProject>> getAllTasksByNameZA();
-
-
 }

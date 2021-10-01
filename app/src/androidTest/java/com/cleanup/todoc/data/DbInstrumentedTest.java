@@ -7,8 +7,8 @@ import android.graphics.Color;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.cleanup.todoc.db.TodocDatabase;
 import com.cleanup.todoc.model.dao.ProjectDao;
@@ -24,7 +24,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -49,6 +48,7 @@ public class DbInstrumentedTest {
         mProjectDao = mTodocDatabase.mProjectDao();
     }
 
+    // Adding one project to db
     @Before
     public void addProject(){
         Project testProject = new Project("testProject", Color.GREEN);
@@ -56,26 +56,26 @@ public class DbInstrumentedTest {
     }
 
     @After
-    public void closeDb() throws IOException {
+    public void closeDb() {
         mTodocDatabase.close();
     }
 
     @Test
-    public void getProjects() throws InterruptedException {
-        List<Project> testProjectList = LiveDataTestUtils.getOrAwaitValue(mProjectDao.getAllProjects());
-        assertEquals("testProject",testProjectList.get(0).getProjectName());
+    public void getProjects() throws Exception {
+        List<RelationTaskWithProject> testProjectList = LiveDataTestUtils.getOrAwaitValue(mProjectDao.getAllProjects());
+        assertEquals("testProject",testProjectList.get(0));
     }
 
     @Test
-    public void insertTaskInDb() throws InterruptedException {
-        Task testTask0 = new Task(0,1,"testTask0",1630497600 );
-        mTaskDao.insert(testTask0);
+    public void insertTaskInDb() throws Exception {
+        Task testTask1 = new Task(1,1,"testTask1",1630497601 );
+        mTaskDao.insert(testTask1);
         List<RelationTaskWithProject> testTaskList = LiveDataTestUtils.getOrAwaitValue(mTaskDao.getAllTasks());
-        assertEquals("testTask0",testTaskList.get(0).getTask().getTaskName());
+        assertEquals(1,testTaskList.size());
     }
 
     @Test
-    public void getAllTasksInDb() throws InterruptedException {
+    public void getAllTasksInDb() throws Exception {
         Task testTask1 = new Task(1,1,"testTask1",1630497601 );
         Task testTask2 = new Task(2,1,"testTask2",1630497602 );
         Task testTask3 = new Task(3,1,"testTask3",1630497603 );
@@ -87,7 +87,7 @@ public class DbInstrumentedTest {
     }
 
     @Test
-    public void deleteTaskInDb() throws InterruptedException {
+    public void deleteTaskInDb() throws Exception {
         Task testTask4 = new Task(4, 1, "testTask4", 1630497604);
         mTaskDao.insert(testTask4);
         List<RelationTaskWithProject> testTaskList1 = LiveDataTestUtils.getOrAwaitValue(mTaskDao.getAllTasks());
@@ -96,6 +96,17 @@ public class DbInstrumentedTest {
         mTaskDao.delete(testTask4);
         List<RelationTaskWithProject> testTaskList2 = LiveDataTestUtils.getOrAwaitValue(mTaskDao.getAllTasks());
         assertEquals(0, testTaskList2.size());
+    }
+
+    @Test
+    public void recoverTaskInDb() throws Exception {
+        Task testTask0 = new Task(1,1,"testTask1",1630497601 );
+        mTaskDao.insert(testTask0);
+        List<RelationTaskWithProject> testTaskList = LiveDataTestUtils.getOrAwaitValue(mTaskDao.getAllTasks());
+        assertEquals(1,testTaskList.get(0).getTask().getTaskId());
+        assertEquals(1,testTaskList.get(0).getTask().getProjectId());
+        assertEquals("testTask1",testTaskList.get(0).getTask().getTaskName());
+        assertEquals(1630497601,testTaskList.get(0).getTask().getCreationTimestamp());
     }
 }
 

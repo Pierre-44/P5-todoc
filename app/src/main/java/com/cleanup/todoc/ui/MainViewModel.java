@@ -5,7 +5,6 @@ import static com.cleanup.todoc.ui.Utils.SortMethod.NONE;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.cleanup.todoc.model.dao.ProjectDao;
@@ -39,7 +38,7 @@ public class MainViewModel extends ViewModel {
     private final LiveData<List<RelationTaskWithProject>> allTasksLivedataRecent;
     // Sorting
     public MutableLiveData<SortMethod> mSortingTypeMutableLiveData = new MutableLiveData<>();
-    public LiveData<List<RelationTaskWithProject>> mListTaskLiveData = new LiveData<List<RelationTaskWithProject>>() {};
+    public LiveData<List<RelationTaskWithProject>> mListTaskLiveData;
     public MediatorLiveData<List<RelationTaskWithProject>> mSortedListMediatorLiveData = new MediatorLiveData<>();
 
     // fields
@@ -58,7 +57,7 @@ public class MainViewModel extends ViewModel {
         this.mTaskRepository = taskRepository;
         this.mExecutor = executor;
 
-        allProjects = projectRepository.getAllProjects();
+        allProjects = projectRepository.getAllProjectsLiveData();
         mSortingTypeMutableLiveData.setValue(NONE);
         allTasksLivedataAZ = mTaskRepository.getAllTasksLivedataAZ();
         allTasksLivedataZA = mTaskRepository.getAllTasksLivedataZA();
@@ -68,28 +67,20 @@ public class MainViewModel extends ViewModel {
 
         //Adding data as source to mediator
         mListTaskLiveData = mTaskRepository.getAllTasks();
-        mSortedListMediatorLiveData.addSource(mListTaskLiveData, new Observer<List<RelationTaskWithProject>>() {
-            @Override
-            public void onChanged(List<RelationTaskWithProject> relationTaskWithProjects) {
-                mSortedListMediatorLiveData.setValue(combineDataAndSortingType(mListTaskLiveData, mSortingTypeMutableLiveData));
-
-            }
-        });
+        mSortedListMediatorLiveData.addSource(mListTaskLiveData,
+                relationTaskWithProjects -> mSortedListMediatorLiveData
+                        .setValue(combineDataAndSortingType(mListTaskLiveData, mSortingTypeMutableLiveData)));
 
         //Adding order as source to mediator
-        mSortedListMediatorLiveData.addSource(mSortingTypeMutableLiveData, new Observer<SortMethod>() {
-            @Override
-            public void onChanged(SortMethod sortingType) {
-                mSortedListMediatorLiveData.setValue(combineDataAndSortingType(mListTaskLiveData, mSortingTypeMutableLiveData));
-            }
-        });
+        mSortedListMediatorLiveData.addSource(mSortingTypeMutableLiveData,
+                sortingType -> mSortedListMediatorLiveData
+                        .setValue(combineDataAndSortingType(mListTaskLiveData, mSortingTypeMutableLiveData)));
     }
 
 
     /**
-     * Sort the task list depending on active sorting method and set related live data and
-     * launch view state setting
-     * @return
+     * Sort the task list depending on active sorting method and set related live data
+     * @return sorted list with combine data ans sorting type
      */
     private List<RelationTaskWithProject> combineDataAndSortingType(LiveData<List<RelationTaskWithProject>> tasksLiveData, MutableLiveData<SortMethod> sortingTypeLiveData) {
 

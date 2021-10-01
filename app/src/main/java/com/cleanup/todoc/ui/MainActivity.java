@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -193,4 +194,11 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         viewModel.deleteTaskById(taskId);
     }
 
+    /**
+     * @return for test the adapter item count
+     */
+    @VisibleForTesting
+    public int getTaskAdapterCount() {
+        return adapter.getItemCount();
+    }
 }

@@ -1,7 +1,6 @@
 package com.cleanup.todoc.data.dao;
 
-import static junit.framework.TestCase.assertEquals;
-
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
@@ -11,10 +10,11 @@ import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.cleanup.todoc.utils.LiveDataTestUtils;
 import com.cleanup.todoc.db.TodocDatabase;
 import com.cleanup.todoc.model.dao.ProjectDao;
 import com.cleanup.todoc.model.entity.Project;
+import com.cleanup.todoc.model.entity.RelationTaskWithProject;
+import com.cleanup.todoc.utils.LiveDataTestUtils;
 
 import org.junit.After;
 import org.junit.Before;
@@ -48,7 +48,8 @@ public class ProjectDaoTest {
     public void createDb() {
         Context context = ApplicationProvider.getApplicationContext();
         mTodocDatabase = Room.inMemoryDatabaseBuilder(context, TodocDatabase.class).build();
-        mProjectDao = TodocDatabase.getInstanceDB().mProjectDao();
+        mProjectDao = mTodocDatabase.mProjectDao();
+        mProjectDao.deleteAllProjects();
     }
 
     @After
@@ -57,22 +58,22 @@ public class ProjectDaoTest {
     }
 
     @Test
-    public void getAllProject_should_return_empty() throws InterruptedException {
+    public void getAllProjectShouldReturnEmpty() throws InterruptedException {
         // When
-        List<Project> projectList = LiveDataTestUtils.getOrAwaitValue(mProjectDao.getAllProjects());
+        List<RelationTaskWithProject> projectList = LiveDataTestUtils.getOrAwaitValue(mProjectDao.getAllProjects());
         // Then
         assertTrue(projectList.isEmpty());
     }
 
     @Test
-    public void insert_one_project() throws InterruptedException {
+    public void insertOneProject() throws InterruptedException {
         // Given
         Project projectTest1 = new Project(EXPECTED_PROJECT_NAME_1, EXPECTED_PROJECT_COLOR_1);
         // When
         mProjectDao.insert(projectTest1);
-        List<Project> projectList = LiveDataTestUtils.getOrAwaitValue(mProjectDao.getAllProjects());
+        List<RelationTaskWithProject> projectList = LiveDataTestUtils.getOrAwaitValue(mProjectDao.getAllProjects());
         // Then
-        assertEquals(
+        assertSame(
                 Collections.singletonList(
                         new Project(EXPECTED_PROJECT_NAME_1, EXPECTED_PROJECT_COLOR_1)
                 ),
@@ -81,16 +82,16 @@ public class ProjectDaoTest {
     }
 
     @Test
-    public void insert_two_project() throws InterruptedException {
+    public void insertTwoProject() throws InterruptedException {
         // Given
         Project projectTest1 = new Project(EXPECTED_PROJECT_NAME_1, EXPECTED_PROJECT_COLOR_1);
         Project projectTest2 = new Project(EXPECTED_PROJECT_NAME_2, EXPECTED_PROJECT_COLOR_2);
         // When
         mProjectDao.insert(projectTest1);
         mProjectDao.insert(projectTest2);
-        List<Project> projectList = LiveDataTestUtils.getOrAwaitValue(mProjectDao.getAllProjects());
+        List<RelationTaskWithProject> projectList = LiveDataTestUtils.getOrAwaitValue(mProjectDao.getAllProjects());
         // Then
-        assertEquals(
+        assertSame(
                 Arrays.asList(
                         new Project(EXPECTED_PROJECT_NAME_1, EXPECTED_PROJECT_COLOR_1),
                         new Project(EXPECTED_PROJECT_NAME_2, EXPECTED_PROJECT_COLOR_2)
