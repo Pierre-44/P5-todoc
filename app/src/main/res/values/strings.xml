@@ -16,4 +16,6 @@
     <string name="task_name_hint">Nom de la tâche</string>
 
     <string name="empty_task_name">Le nom de la tâche doit être renseigné</string>
+    <string name="image_view_of_project">Image view of project</string>
+    <string name="icon_delete">Icon delete</string>
 </resources>

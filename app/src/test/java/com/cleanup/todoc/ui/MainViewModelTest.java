@@ -2,6 +2,8 @@ package com.cleanup.todoc.ui;
 
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import android.graphics.Color;
 
@@ -72,17 +74,109 @@ public class MainViewModelTest {
     public void setUp() {
         //Mock LiveDatas from repositories
         mocking_mListOfProjectMutableLiveData();
+        mocking_mListOfRelationTaskWithProjectMutableLiveData();
         mocking_mListOfRelationTaskWithProjectAZMutableLiveData();
         mocking_mListOfRelationTaskWithProjectZAMutableLiveData();
         mocking_mListOfRelationTaskWithProjectOldMutableLiveData();
         mocking_mListOfRelationTaskWithProjectRecentMutableLiveData();
 
         //Instantiate MainViewModel for testing, passing mocked repositories
-        //underTestMainViewModel = new MainViewModel(mockProjectRepository, mockTaskRepository, testExecutor);
 
     }
     @After
     public void tearDown() {
+    }
+
+
+    // Test
+
+    @Test
+    public void test_az_comparator() {
+        // Given :
+        List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest() ;
+        // When :
+        Collections.sort(allTaskWithProjects, new RelationTaskWithProject.TaskAZComparator());
+        // Then :
+        assertSame(allTaskWithProjects.get(0).getTask(), testTask8);
+        assertSame(allTaskWithProjects.get(1).getTask(), testTask7);
+        assertSame(allTaskWithProjects.get(2).getTask(), testTask6);
+
+    }
+
+    @Test
+    public void test_za_comparator() {
+        // Given :
+        List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest() ;
+        // When :
+        Collections.sort(allTaskWithProjects, new RelationTaskWithProject.TaskZAComparator());
+        // Then :
+        assertSame(allTaskWithProjects.get(0).getTask(), testTask0);
+        assertSame(allTaskWithProjects.get(1).getTask(), testTask1);
+        assertSame(allTaskWithProjects.get(2).getTask(), testTask2);
+    }
+
+    @Test
+    public void test_recent_comparator() {
+        // Given :
+        List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest() ;
+        // When :
+        Collections.sort(allTaskWithProjects, new RelationTaskWithProject.TaskRecentComparator());
+        // Then :
+        assertSame(allTaskWithProjects.get(3).getTask(), testTask5);
+        assertSame(allTaskWithProjects.get(4).getTask(), testTask4);
+        assertSame(allTaskWithProjects.get(5).getTask(), testTask3);
+    }
+
+    @Test
+    public void test_old_comparator() {
+        // Given :
+        List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest() ;
+        // When :
+        Collections.sort(allTaskWithProjects, new RelationTaskWithProject.TaskOldComparator());
+        // Then :
+        assertSame(allTaskWithProjects.get(3).getTask(), testTask3);
+        assertSame(allTaskWithProjects.get(4).getTask(), testTask4);
+        assertSame(allTaskWithProjects.get(5).getTask(), testTask5);
+    }
+
+    @Test
+    public void test_insert_task() {
+        // Given :
+        Task taskToInsert = this.mListOfRelationTaskWithProjectMutableLiveData.getValue().get(0).getTask();
+        // When :
+        underTestMainViewModel.insertTask(taskToInsert);
+        // Then :
+        verify(mockTaskRepository, times(1)).insert(taskToInsert);
+    }
+
+    @Test
+    public void test_deleteTask() {
+        // Given :
+        Task taskToDelete = this.mListOfRelationTaskWithProjectMutableLiveData.getValue().get(0).getTask();
+        // When :
+        underTestMainViewModel.deleteTask(taskToDelete);
+        // Then :
+        verify(mockTaskRepository, times(1)).delete(taskToDelete);
+    }
+
+    @Test
+    public void test_deleteTaskById() {
+        // Given :
+        long taskToDeleteById = this.mListOfRelationTaskWithProjectMutableLiveData.getValue().get(0).getTask().getProjectId();
+        // When :
+        underTestMainViewModel.deleteTaskById(taskToDeleteById);
+        // Then :
+        verify(mockTaskRepository, times(1)).deleteTaskById(taskToDeleteById);
+    }
+
+    @Test
+    public void test_insertProject() {
+        // Given :
+        Project projectToInsert = this.mListOfProjectMutableLiveData.getValue().get(0);
+        // When :
+        underTestMainViewModel.insertProject(projectToInsert);
+        // Then :
+        verify(mockProjectRepository, times(1)).insert(projectToInsert);
     }
 
 
@@ -240,67 +334,4 @@ public class MainViewModelTest {
         return allProject;
     }
 
-    // Test
-
-
-    @Test
-    public void test_az_comparator() {
-        List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest() ;
-
-        Collections.sort(allTaskWithProjects, new RelationTaskWithProject.TaskAZComparator());
-
-        assertSame(allTaskWithProjects.get(0).getTask(), testTask8);
-        assertSame(allTaskWithProjects.get(1).getTask(), testTask7);
-        assertSame(allTaskWithProjects.get(2).getTask(), testTask6);
-
-    }
-
-    @Test
-    public void test_za_comparator() {
-        List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest() ;
-
-        Collections.sort(allTaskWithProjects, new RelationTaskWithProject.TaskZAComparator());
-
-        assertSame(allTaskWithProjects.get(0).getTask(), testTask0);
-        assertSame(allTaskWithProjects.get(1).getTask(), testTask1);
-        assertSame(allTaskWithProjects.get(2).getTask(), testTask2);
-    }
-
-    //TODO : reiteration test
-    @Test
-    public void test_recent_comparator() {
-        List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest() ;
-
-        Collections.sort(allTaskWithProjects, new RelationTaskWithProject.TaskRecentComparator());
-
-        assertSame(allTaskWithProjects.get(3).getTask(), testTask5);
-        assertSame(allTaskWithProjects.get(4).getTask(), testTask4);
-        assertSame(allTaskWithProjects.get(5).getTask(), testTask3);
-    }
-
-    @Test
-    public void test_old_comparator() {
-        List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest() ;
-
-        Collections.sort(allTaskWithProjects, new RelationTaskWithProject.TaskOldComparator());
-
-        assertSame(allTaskWithProjects.get(3).getTask(), testTask3);
-        assertSame(allTaskWithProjects.get(4).getTask(), testTask4);
-        assertSame(allTaskWithProjects.get(5).getTask(), testTask5);
-    }
-
-    @Test
-    public void test_insert_task() {
-
-    }
-
-    @Test
-    public void test_deleteTaskById() {
-
-    }
-
-    @Test
-    public void test_insertProject() {
-
-    }
 }

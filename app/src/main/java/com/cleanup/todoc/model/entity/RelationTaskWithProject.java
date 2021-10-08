@@ -1,5 +1,6 @@
 package com.cleanup.todoc.model.entity;
 
+import androidx.annotation.Nullable;
 import androidx.room.Embedded;
 import androidx.room.Relation;
 
@@ -35,9 +36,15 @@ public class RelationTaskWithProject {
         this.mProject = project;
     }
 
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return super.equals(obj);
+    }
 
-    //--------------------------------------------------
-    // Task Comparator
+
+
+//--------------------------------------------------
+    // RelationTaskWithProject Comparator
     //--------------------------------------------------
 
     /**

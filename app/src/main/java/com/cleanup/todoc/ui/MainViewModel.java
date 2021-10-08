@@ -110,6 +110,10 @@ public class MainViewModel extends ViewModel {
         }
     }
 
+    public void deleteTask(Task task) {
+        mTaskRepository.delete(task);
+    }
+
     public void deleteTaskById(final long id){
         mTaskRepository.deleteTaskById(id);
     }

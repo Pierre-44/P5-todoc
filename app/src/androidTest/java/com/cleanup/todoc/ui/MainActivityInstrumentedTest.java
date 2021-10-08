@@ -18,6 +18,7 @@ import static com.cleanup.todoc.ui.UiTestModel.PROJECT2_TASK_1;
 import static com.cleanup.todoc.ui.UiTestModel.PROJECT2_TASK_2;
 import static com.cleanup.todoc.ui.UiTestModel.PROJECT2_TASK_3;
 import static com.cleanup.todoc.ui.UiTestModel.PROJECT_1;
+import static com.cleanup.todoc.ui.UiTestModel.PROJECT_2;
 import static com.cleanup.todoc.ui.UiTestModel.THREE;
 import static com.cleanup.todoc.ui.UiTestModel.TWO;
 import static com.cleanup.todoc.ui.UiTestModel.ZERO;
@@ -48,9 +49,15 @@ public class MainActivityInstrumentedTest {
 
     private ActivityScenario<MainActivity> activityScenario;
 
+    //--------------------------------------------------
+    // Test Rules , before and after
+    //--------------------------------------------------
+
+
     @Before
     public void setUp() {
         activityScenario = ActivityScenario.launch(MainActivity.class);
+
     }
 
     @After
@@ -58,7 +65,19 @@ public class MainActivityInstrumentedTest {
         activityScenario.close();
     }
 
-    // New Tests
+    //--------------------------------------------------
+    // MAIN ACTIVITY TEST
+    //--------------------------------------------------
+
+    @Test
+    public void donTHaveTaskAndCheckNoTaskDisplayOnList() {
+        // We check "no task" is displayed
+        this.assertNoTaskVisibility();
+        // We check the number of task
+        this.assertTaskCount(ZERO);
+    }
+
+
     @Test
     public void addTaskAndCheckIsDisplayOnList() {
         // We check "no task" is displayed
@@ -94,7 +113,7 @@ public class MainActivityInstrumentedTest {
         // We add all Project1 tasks
         this.addTask(PROJECT_1, PROJECT1_TASK_1);
         this.addTask(PROJECT_1, PROJECT1_TASK_2);
-        this.addTask(PROJECT_1, PROJECT1_TASK_3);
+        this.addTask(PROJECT_2, PROJECT1_TASK_3);
 
         // We check the number of task is 3
         this.assertTaskCount(THREE);
@@ -111,17 +130,15 @@ public class MainActivityInstrumentedTest {
         // Then sorting must be old first
 
 
-
     }
 
+    //--------------------------------------------------
+    // END OF TASK DAO TEST
+    //--------------------------------------------------
 
-
-
-
-
-
-
-    // Test methods :
+    //--------------------------------------------------
+    // METHODS FOR TESTING
+    //--------------------------------------------------
 
     private void addTask(int projectId, String taskName) {
         // We click on the add fab button
