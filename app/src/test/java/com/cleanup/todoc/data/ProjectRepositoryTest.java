@@ -25,9 +25,11 @@ import java.util.concurrent.Executors;
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectRepositoryTest {
 
+    //--------------------------------------------------
+    // Field , Test Rules , before and after
+    //--------------------------------------------------
 
     private static final Project PROJECT1_TEST = new Project("test_project1", Color.GREEN);
-
 
     @Mock
     ProjectDao mockProjectDao;
@@ -47,6 +49,10 @@ public class ProjectRepositoryTest {
         mockProjectRepository.setDoInBackground(testExecutor);
     }
 
+    //--------------------------------------------------
+    // PROJECT REPOSITORY TEST
+    //--------------------------------------------------
+
     @Test
     public void verifyInsertCallsDaoInsert() {
         // When :
@@ -62,4 +68,8 @@ public class ProjectRepositoryTest {
         // Then :
         verify(mockProjectDao, after(100).times(1)).delete(PROJECT1_TEST);
     }
+
+    //--------------------------------------------------
+    // END OF PROJECT REPOSITORY TEST
+    //--------------------------------------------------
 }

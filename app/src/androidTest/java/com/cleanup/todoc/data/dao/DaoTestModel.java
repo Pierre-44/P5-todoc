@@ -44,7 +44,6 @@ public class DaoTestModel {
     public static final int EXPECTED_TASK_TIMESTAMP_2 = 1609455603;
     public static final Task TASK_TEST_2 = new Task(EXPECTED_TASK_ID_2,PROJECT_TEST_2_ID,EXPECTED_TASK_NAME_2,EXPECTED_TASK_TIMESTAMP_2) ;
 
-
     // EXPECTED_TASK_ID_2
     public static final long EXPECTED_TASK_ID_3 = 3;
     private static final String EXPECTED_TASK_NAME_3 = "C_EXPECTED_TASK_NAME_3";
@@ -54,6 +53,10 @@ public class DaoTestModel {
     // EXPECTED_TASKS_COUNT
     public static final int EXPECTED_TASKS_COUNT_3 = 3 ;
     public static final int EXPECTED_TASKS_COUNT_1 = 1 ;
+
+    // EXPECTED_PROJECTS_COUNT
+    public static final int EXPECTED_PROJECTS_COUNT_3 = 3 ;
+    public static final int EXPECTED_PROJECTS_COUNT_2 = 2 ;
 
     // INDEX POSITION
     public static final int IN_FIRST_POSITION = 0;

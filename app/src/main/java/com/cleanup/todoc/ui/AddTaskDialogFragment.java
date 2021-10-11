@@ -42,12 +42,20 @@ public class AddTaskDialogFragment extends DialogFragment {
     @Nullable
     private Spinner dialogSpinner;
 
+    /**
+     * Instantiates a new Add task dialog fragment.
+     *
+     * Empty constructor is required for DialogFragment
+     */
     public AddTaskDialogFragment() {
-        // Empty constructor is required for DialogFragment
     }
 
+    /**
+     * New instance add task dialog fragment.
+     *
+     * @return the add task dialog fragment
+     */
     public static AddTaskDialogFragment newInstance() {
-
         return new AddTaskDialogFragment();
     }
 
@@ -57,7 +65,7 @@ public class AddTaskDialogFragment extends DialogFragment {
 
         // instancie viewmodel and container
 
-        TodocContainer container = new TodocContainer(Objects.requireNonNull(getActivity()).getApplication());
+        TodocContainer container = new TodocContainer(requireActivity().getApplication());
 
         mAddTaskViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(
                 container.getProjectRepository(),

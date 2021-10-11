@@ -10,7 +10,7 @@ public abstract class Utils {
      */
     public enum SortMethod {
         /**
-         * No sort (by default recent first)
+         * No sort (by default by task id)
          */
         NONE,
         /**

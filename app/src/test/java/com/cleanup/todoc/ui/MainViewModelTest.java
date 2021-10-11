@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 
 /**
@@ -38,34 +39,30 @@ import java.util.concurrent.Executor;
 @RunWith(MockitoJUnitRunner.class)
 public class MainViewModelTest {
 
-    //set Task  :
-    Task testTask0 = new Task(0, 1,"I task 0" ,new Date().getTime() );
-    Task testTask1 = new Task(1, 1,"H task 1" ,new Date().getTime()+1);
-    Task testTask2 = new Task(2, 1,"G task 2" ,new Date().getTime()+2);
-    Task testTask3 = new Task(3, 2,"F task 3" ,new Date().getTime()+3);
-    Task testTask4 = new Task(4, 2,"E task 4" ,new Date().getTime()+4);
-    Task testTask5 = new Task(5, 2,"D task 5" ,new Date().getTime()+5);
-    Task testTask6 = new Task(6, 3,"C task 6" ,new Date().getTime()+6);
-    Task testTask7 = new Task(7, 3,"B task 7" ,new Date().getTime()+7);
-    Task testTask8 = new Task(8, 3,"A task 8" ,new Date().getTime()+8);
+    //--------------------------------------------------
+    // Fields
+    //--------------------------------------------------
 
     @Mock // ProjectRepository to use on test
     private ProjectRepository mockProjectRepository;
     @Mock // TaskRepository to use on test
     private TaskRepository mockTaskRepository;
-    @Mock // ViewModel to use on test
+    // ViewModel to use on test
     private MainViewModel underTestMainViewModel;
-    @Mock // Executor to use on test
-    private Executor testExecutor;
+    // Executor to use on test
+    private Executor testExecutor = MainViewModel.getExecutor();
 
-
-    //MainViewModel LiveDats from repo to be mocked
+    //MainViewModel LiveDatas from repo to be mocked
     private final MutableLiveData<List<Project>> mListOfProjectMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<RelationTaskWithProject>> mListOfRelationTaskWithProjectMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<RelationTaskWithProject>> mListOfRelationTaskWithProjectAZMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<RelationTaskWithProject>> mListOfRelationTaskWithProjectZAMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<RelationTaskWithProject>> mListOfRelationTaskWithProjectOldMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<RelationTaskWithProject>> mListOfRelationTaskWithProjectRecentMutableLiveData = new MutableLiveData<>();
+
+    //--------------------------------------------------
+    // Test Rules , before and after
+    //--------------------------------------------------
 
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
@@ -81,22 +78,64 @@ public class MainViewModelTest {
         mocking_mListOfRelationTaskWithProjectRecentMutableLiveData();
 
         //Instantiate MainViewModel for testing, passing mocked repositories
+        underTestMainViewModel = new MainViewModel(mockProjectRepository,mockTaskRepository);
 
     }
     @After
     public void tearDown() {
     }
 
+    //--------------------------------------------------
+    // MAIN VIEW MODEL TEST
+    //--------------------------------------------------
 
-    // Test
+    @Test
+    public void test_insertProject() {
+        // Given : set a Project to insert
+        Project projectToInsert = Objects.requireNonNull(this.mListOfProjectMutableLiveData.getValue()).get(0);
+        // When : insert Project
+        underTestMainViewModel.insertProject(projectToInsert);
+        // Then : check if repository is called 1 time when we insert the project
+        verify(mockProjectRepository, times(1)).insert(projectToInsert);
+    }
+
+    @Test
+    public void test_insert_task() {
+        // Given : set a Task to insert
+        Task taskToInsert = Objects.requireNonNull(this.mListOfRelationTaskWithProjectMutableLiveData.getValue()).get(0).getTask();
+        // When : insert Task
+        underTestMainViewModel.insertTask(taskToInsert);
+        // Then : check if repository is called 1 time when we insert the task
+        verify(mockTaskRepository, times(1)).insert(taskToInsert);
+    }
+
+    @Test
+    public void test_deleteTask() {
+        // Given : set a Task to delete
+        Task taskToDelete = Objects.requireNonNull(this.mListOfRelationTaskWithProjectMutableLiveData.getValue()).get(0).getTask();
+        // When : delete task
+        underTestMainViewModel.deleteTask(taskToDelete);
+        // Then : check if repository is called 1 time when we delete the task
+        verify(mockTaskRepository, times(1)).delete(taskToDelete);
+    }
+
+    @Test
+    public void test_deleteTaskById() {
+        // Given : set a Task to delete with id
+        long taskToDeleteById = Objects.requireNonNull(this.mListOfRelationTaskWithProjectMutableLiveData.getValue()).get(0).getTask().getProjectId();
+        // When : delete task with id
+        underTestMainViewModel.deleteTaskById(taskToDeleteById);
+        // Then : check if repository is called 1 time when we delete the task by id
+        verify(mockTaskRepository, times(1)).deleteTaskById(taskToDeleteById);
+    }
 
     @Test
     public void test_az_comparator() {
-        // Given :
+        // Given : set list of task for test
         List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest() ;
-        // When :
+        // When : sorted with task comparator
         Collections.sort(allTaskWithProjects, new RelationTaskWithProject.TaskAZComparator());
-        // Then :
+        // Then : check the order of task
         assertSame(allTaskWithProjects.get(0).getTask(), testTask8);
         assertSame(allTaskWithProjects.get(1).getTask(), testTask7);
         assertSame(allTaskWithProjects.get(2).getTask(), testTask6);
@@ -105,11 +144,11 @@ public class MainViewModelTest {
 
     @Test
     public void test_za_comparator() {
-        // Given :
+        // Given : set list of task for test
         List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest() ;
-        // When :
+        // When : sorted with task comparator
         Collections.sort(allTaskWithProjects, new RelationTaskWithProject.TaskZAComparator());
-        // Then :
+        // Then : check the order of task
         assertSame(allTaskWithProjects.get(0).getTask(), testTask0);
         assertSame(allTaskWithProjects.get(1).getTask(), testTask1);
         assertSame(allTaskWithProjects.get(2).getTask(), testTask2);
@@ -117,11 +156,11 @@ public class MainViewModelTest {
 
     @Test
     public void test_recent_comparator() {
-        // Given :
+        // Given : set list of task for test
         List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest() ;
-        // When :
+        // When : sorted with task comparator
         Collections.sort(allTaskWithProjects, new RelationTaskWithProject.TaskRecentComparator());
-        // Then :
+        // Then : check the order of task
         assertSame(allTaskWithProjects.get(3).getTask(), testTask5);
         assertSame(allTaskWithProjects.get(4).getTask(), testTask4);
         assertSame(allTaskWithProjects.get(5).getTask(), testTask3);
@@ -129,56 +168,23 @@ public class MainViewModelTest {
 
     @Test
     public void test_old_comparator() {
-        // Given :
+        // Given : set list of task for test
         List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest() ;
-        // When :
+        // When : sorted with task comparator
         Collections.sort(allTaskWithProjects, new RelationTaskWithProject.TaskOldComparator());
-        // Then :
+        // Then : check the order of task
         assertSame(allTaskWithProjects.get(3).getTask(), testTask3);
         assertSame(allTaskWithProjects.get(4).getTask(), testTask4);
         assertSame(allTaskWithProjects.get(5).getTask(), testTask5);
     }
 
-    @Test
-    public void test_insert_task() {
-        // Given :
-        Task taskToInsert = this.mListOfRelationTaskWithProjectMutableLiveData.getValue().get(0).getTask();
-        // When :
-        underTestMainViewModel.insertTask(taskToInsert);
-        // Then :
-        verify(mockTaskRepository, times(1)).insert(taskToInsert);
-    }
+    //--------------------------------------------------
+    // END OF MAIN VIEW MODEL TEST
+    //--------------------------------------------------
 
-    @Test
-    public void test_deleteTask() {
-        // Given :
-        Task taskToDelete = this.mListOfRelationTaskWithProjectMutableLiveData.getValue().get(0).getTask();
-        // When :
-        underTestMainViewModel.deleteTask(taskToDelete);
-        // Then :
-        verify(mockTaskRepository, times(1)).delete(taskToDelete);
-    }
-
-    @Test
-    public void test_deleteTaskById() {
-        // Given :
-        long taskToDeleteById = this.mListOfRelationTaskWithProjectMutableLiveData.getValue().get(0).getTask().getProjectId();
-        // When :
-        underTestMainViewModel.deleteTaskById(taskToDeleteById);
-        // Then :
-        verify(mockTaskRepository, times(1)).deleteTaskById(taskToDeleteById);
-    }
-
-    @Test
-    public void test_insertProject() {
-        // Given :
-        Project projectToInsert = this.mListOfProjectMutableLiveData.getValue().get(0);
-        // When :
-        underTestMainViewModel.insertProject(projectToInsert);
-        // Then :
-        verify(mockProjectRepository, times(1)).insert(projectToInsert);
-    }
-
+    //--------------------------------------------------
+    // METHODS FOR TESTING
+    //--------------------------------------------------
 
     //Mocking repositories LiveData
 
@@ -191,7 +197,7 @@ public class MainViewModelTest {
        List<RelationTaskWithProject> allRelationTaskWithProjects = getRelationTaskWithProjectsForTest();
 
         mListOfRelationTaskWithProjectMutableLiveData.setValue(allRelationTaskWithProjects);
-        doReturn(mListOfRelationTaskWithProjectMutableLiveData).when(mockProjectRepository).getAllProjectsLiveData();
+        doReturn(mListOfRelationTaskWithProjectMutableLiveData).when(mockTaskRepository).getAllRelationTaskWithProjectLiveData();
     }
 
     private void mocking_mListOfRelationTaskWithProjectAZMutableLiveData() {
@@ -258,9 +264,18 @@ public class MainViewModelTest {
         doReturn(mListOfRelationTaskWithProjectRecentMutableLiveData).when(mockTaskRepository).getAllTasksLivedataRecent();
     }
 
-    private List<RelationTaskWithProject> getRelationTaskWithProjectsForTest() {
+    //set Task  :
+    Task testTask0 = new Task(0, 1,"I task 0" ,new Date().getTime() );
+    Task testTask1 = new Task(1, 1,"H task 1" ,new Date().getTime()+1);
+    Task testTask2 = new Task(2, 1,"G task 2" ,new Date().getTime()+2);
+    Task testTask3 = new Task(3, 2,"F task 3" ,new Date().getTime()+3);
+    Task testTask4 = new Task(4, 2,"E task 4" ,new Date().getTime()+4);
+    Task testTask5 = new Task(5, 2,"D task 5" ,new Date().getTime()+5);
+    Task testTask6 = new Task(6, 3,"C task 6" ,new Date().getTime()+6);
+    Task testTask7 = new Task(7, 3,"B task 7" ,new Date().getTime()+7);
+    Task testTask8 = new Task(8, 3,"A task 8" ,new Date().getTime()+8);
 
-        // set tasks
+    private List<RelationTaskWithProject> getRelationTaskWithProjectsForTest() {
 
         //relationTaskWithProject0
         RelationTaskWithProject relationTaskWithProject0 = new RelationTaskWithProject();
@@ -299,7 +314,6 @@ public class MainViewModelTest {
         relationTaskWithProject8.setProject(getAllProjectsForTest().get(2));
         relationTaskWithProject8.setTask(testTask8);
 
-
         // return Arrays as list
         return Arrays.asList(
                 relationTaskWithProject0,
@@ -311,13 +325,10 @@ public class MainViewModelTest {
                 relationTaskWithProject6,
                 relationTaskWithProject7,
                 relationTaskWithProject8
-
         );
     }
 
-
     // Setting Project Tasks and RelationTaskWithProject
-
     private List<Project>getAllProjectsForTest() {
         List<Project> allProject = Arrays.asList(
                 new Project("Test Project 1", Color.BLUE),
@@ -326,12 +337,10 @@ public class MainViewModelTest {
         );
 
         // set id instated of autogenerated by Room
-
         allProject.get(0).setProjectId(1);
         allProject.get(1).setProjectId(2);
         allProject.get(2).setProjectId(3);
 
         return allProject;
     }
-
 }

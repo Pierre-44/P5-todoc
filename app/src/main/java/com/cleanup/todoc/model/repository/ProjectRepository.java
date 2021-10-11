@@ -26,6 +26,11 @@ public class ProjectRepository {
     private LiveData<List<Project>> allProjects;
 
     // Constructor
+    /**
+     * Instantiates a new Project repository.
+     *
+     * @param application the application
+     */
     public ProjectRepository(Application application) {
         TodocDatabase todocDatabase = TodocDatabase.getInstance(application);
         mProjectDao = todocDatabase.mProjectDao();
@@ -33,27 +38,54 @@ public class ProjectRepository {
         doInBackground = Executors.newFixedThreadPool(3);
     }
 
+    /**
+     * Instantiates a new Project repository.
+     *
+     * @param projectDao the project dao
+     */
     @VisibleForTesting
     public ProjectRepository(ProjectDao projectDao) {
         mProjectDao = projectDao;
         doInBackground = Executors.newFixedThreadPool(3);
     }
 
-    // methods of interface
+    /**
+     * Insert.
+     *
+     * @param project the project to insert
+     */
+// methods of interface
     public void insert(Project project) {
         doInBackground.execute(()-> mProjectDao.insert(project));
     }
 
+    /**
+     * Delete.
+     *
+     * @param project the project to delete
+     */
     public void delete(Project project) {
         doInBackground.execute(()-> mProjectDao.delete(project));
     }
 
     // getter
+
+    /**
+     * Gets all projects live data.
+     *
+     * @return the all projects live data
+     */
     public LiveData<List<Project>> getAllProjectsLiveData() {
         return allProjects;
     }
 
     // setter
+
+    /**
+     * Sets do in background.
+     *
+     * @param doInBackground the do in background
+     */
     public void setDoInBackground(Executor doInBackground) {
         this.doInBackground = doInBackground;
     }

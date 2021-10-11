@@ -6,6 +6,9 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+/**
+ * The type Project.
+ */
 @Entity(tableName = "project_table")
 public class Project {
 

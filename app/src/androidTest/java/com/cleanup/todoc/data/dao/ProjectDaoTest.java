@@ -1,13 +1,15 @@
 package com.cleanup.todoc.data.dao;
 
+import static com.cleanup.todoc.data.dao.DaoTestModel.EXPECTED_PROJECTS_COUNT_2;
+import static com.cleanup.todoc.data.dao.DaoTestModel.EXPECTED_PROJECTS_COUNT_3;
+import static com.cleanup.todoc.data.dao.DaoTestModel.IN_FIRST_POSITION;
 import static com.cleanup.todoc.data.dao.DaoTestModel.PROJECT_TEST_1;
-import static com.cleanup.todoc.data.dao.DaoTestModel.PROJECT_TEST_1_COLOR;
 import static com.cleanup.todoc.data.dao.DaoTestModel.PROJECT_TEST_1_ID;
-import static com.cleanup.todoc.data.dao.DaoTestModel.PROJECT_TEST_1_NAME;
 import static com.cleanup.todoc.data.dao.DaoTestModel.PROJECT_TEST_2;
-import static com.cleanup.todoc.data.dao.DaoTestModel.PROJECT_TEST_2_COLOR;
 import static com.cleanup.todoc.data.dao.DaoTestModel.PROJECT_TEST_2_ID;
-import static com.cleanup.todoc.data.dao.DaoTestModel.PROJECT_TEST_2_NAME;
+import static com.cleanup.todoc.data.dao.DaoTestModel.PROJECT_TEST_3;
+import static com.cleanup.todoc.data.dao.DaoTestModel.PROJECT_TEST_3_ID;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -68,7 +70,7 @@ public class ProjectDaoTest {
         //Given : no project inserted in database
         // When : we get the list of project with getAllProjects()
         List<Project> projectList = LiveDataTestUtils.getOrAwaitValue(mProjectDao.getAllProjects());
-        // Then
+        // Then : check projectList is empty
         assertTrue(projectList.isEmpty());
     }
 
@@ -76,36 +78,19 @@ public class ProjectDaoTest {
     // PROJECT DAO TEST
     //--------------------------------------------------
 
-
     @Test
-    public void insertOneProject() throws InterruptedException {
-        // Given : insert 1 Project and set this id
-        mProjectDao.insert(PROJECT_TEST_1);
-        PROJECT_TEST_1.setProjectId(PROJECT_TEST_1_ID);
-        // When : we set a Project
-        Project EXPECTED_PROJECT_1 = new Project(PROJECT_TEST_1_NAME,PROJECT_TEST_1_COLOR);
-        // Then : we check it's the correct project
-        assertEquals(EXPECTED_PROJECT_1, PROJECT_TEST_1);
-
-    }
-
-    @Test
-    public void insertTwoProject() throws InterruptedException {
+    public void insertAllProject() throws InterruptedException {
         // Given : insert 2 Projects and set there ids
-        mProjectDao.insert(PROJECT_TEST_1);
-        PROJECT_TEST_1.setProjectId(PROJECT_TEST_1_ID);
-        mProjectDao.insert(PROJECT_TEST_2);
-        PROJECT_TEST_2.setProjectId(PROJECT_TEST_2_ID);
+        this.insertTestProjects();
+        this.setProjectIds();
+        List<Project> expectedProjectsList = Arrays.asList(
+                PROJECT_TEST_1,PROJECT_TEST_2,PROJECT_TEST_3);
         // When : get the list of RelationTaskWithProject with getAllProjects()
-        List<Project> projectList = LiveDataTestUtils.getOrAwaitValue(mProjectDao.getAllProjects());
-        // Then : check we have the 2 correct project
-        assertEquals(
-                Arrays.asList(
-                        new Project(PROJECT_TEST_1_NAME, PROJECT_TEST_1_COLOR),
-                        new Project(PROJECT_TEST_2_NAME, PROJECT_TEST_2_COLOR)
-                ),
-                projectList
-        );
+        List<Project> actualProjects = LiveDataTestUtils.getOrAwaitValue(mProjectDao.getAllProjects());
+        // Then : check projectList contain 3 projects
+        assertEquals(EXPECTED_PROJECTS_COUNT_3, actualProjects.size());
+        // Then : check we have the correct project
+        assertEquals(expectedProjectsList,actualProjects);
     }
 
     @Test
@@ -113,22 +98,19 @@ public class ProjectDaoTest {
         // Given : insert 2 Projects and set there ids
         this.insertTestProjects();
         this.setProjectIds();
-        // When : get the list of RelationTaskWithProject with getAllProjects()
-        List<Project> projectList = LiveDataTestUtils.getOrAwaitValue(mProjectDao.getAllProjects());
-        // Then : delete a project and check the last one
-        mProjectDao.delete(PROJECT_TEST_1);
-        assertEquals(projectList.get(0), PROJECT_TEST_2);
-    }
+        // When : delete the project in first position
+        Project projectToDelete =
+                LiveDataTestUtils.getOrAwaitValue(mProjectDao.getAllProjects()).get(IN_FIRST_POSITION);
+        mProjectDao.delete(projectToDelete);
 
-    @Test
-    public void insertAllProjectAndDeleteAll() throws InterruptedException {
-        // Given : insert 2 Projects and set there ids
-        this.insertTestProjects();
-        this.setProjectIds();
-        // When : get the list of RelationTaskWithProject with getAllProjects()
-        List<Project> projectList = LiveDataTestUtils.getOrAwaitValue(mProjectDao.getAllProjects());
-        // Then : delete all project
-        mProjectDao.deleteAllProjects();
+        // When : get the list of Project with getAllProjects()
+        List<Project> expectedProjectsList = Arrays.asList(
+                PROJECT_TEST_2,PROJECT_TEST_3);
+        List<Project> actualProjects = LiveDataTestUtils.getOrAwaitValue(mProjectDao.getAllProjects());
+        // Then : check projectList contain 2 projects
+        assertEquals(EXPECTED_PROJECTS_COUNT_2, actualProjects.size());
+        // Then : check the 2 projected stayed
+        assertArrayEquals(expectedProjectsList.toArray(), actualProjects.toArray());
     }
 
     //--------------------------------------------------
@@ -142,10 +124,12 @@ public class ProjectDaoTest {
     private void insertTestProjects() {
         mTodocDatabase.mProjectDao().insert(PROJECT_TEST_1);
         mTodocDatabase.mProjectDao().insert(PROJECT_TEST_2);
+        mTodocDatabase.mProjectDao().insert(PROJECT_TEST_3);
     }
 
     private void setProjectIds() {
         PROJECT_TEST_1.setProjectId(PROJECT_TEST_1_ID);
         PROJECT_TEST_2.setProjectId(PROJECT_TEST_2_ID);
+        PROJECT_TEST_3.setProjectId(PROJECT_TEST_3_ID);
     }
 }

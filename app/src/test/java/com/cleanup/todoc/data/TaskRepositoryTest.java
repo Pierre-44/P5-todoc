@@ -23,6 +23,10 @@ import java.util.concurrent.Executors;
 @RunWith(MockitoJUnitRunner.class)
 public class TaskRepositoryTest {
 
+    //--------------------------------------------------
+    // Field , Test Rules , before and after
+    //--------------------------------------------------
+
     private static final Task TASK1_TEST = new Task(1, 1, "test_task1",0);
     private static final long TASK2_TEST = new Task(2,1,"test_task2",0).getTaskId() ;
 
@@ -42,6 +46,10 @@ public class TaskRepositoryTest {
         testExecutor = Executors.newFixedThreadPool(2);
         mockTaskRepository.setDoInBackground(testExecutor);
     }
+
+    //--------------------------------------------------
+    // TASK REPOSITORY TEST
+    //--------------------------------------------------
 
     @Test
     public void verifyInsertCallsDaoInsert() {
@@ -66,5 +74,9 @@ public class TaskRepositoryTest {
         // Then :
         verify(mockTaskDao, after(100).times(1)).deleteTaskById(TASK2_TEST);
     }
+
+    //--------------------------------------------------
+    // END OF TASK REPOSITORY TEST
+    //--------------------------------------------------
 }
 

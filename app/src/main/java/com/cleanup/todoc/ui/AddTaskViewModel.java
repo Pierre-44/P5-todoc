@@ -24,6 +24,13 @@ public class AddTaskViewModel extends ViewModel {
     private LiveData<List<Project>> mProjects;
 
 
+    /**
+     * Instantiates a new Add task view model.
+     *
+     * @param projectRepository the project repository
+     * @param taskRepository    the task repository
+     * @param executor          the executor
+     */
     public AddTaskViewModel(ProjectRepository projectRepository, TaskRepository taskRepository, Executor executor) {
         mProjectRepository = projectRepository;
         mTaskRepository = taskRepository;
@@ -32,10 +39,20 @@ public class AddTaskViewModel extends ViewModel {
 
     }
 
+    /**
+     * Gets projects.
+     *
+     * @return the projects to get
+     */
     public LiveData<List<Project>> getProjects() {
         return mProjects;
     }
 
+    /**
+     * Insert task.
+     *
+     * @param task the task to get
+     */
     public void insertTask(final Task task){
         mExecutor.execute(() -> mTaskRepository.insert(task));
     }

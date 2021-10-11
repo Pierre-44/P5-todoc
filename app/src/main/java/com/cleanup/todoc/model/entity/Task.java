@@ -8,6 +8,9 @@ import androidx.room.PrimaryKey;
 
 import java.util.Objects;
 
+/**
+ * The type Task.
+ */
 @Entity(tableName = "task_table", foreignKeys = {@ForeignKey(
         entity = Project.class,
         parentColumns = "id",
@@ -42,10 +45,10 @@ public class Task {
     /**
      * Instantiates a new Task.
      *
-     * @param taskId            the unique identifier of the task to set
-     * @param projectId         the unique identifier of the project associated to the task to set
-     * @param taskName          the name of the task to set
-     * @param creationTimestamp the timestamp when the task has been created to set
+     * @param taskId            the task id (autogenerate by Room)
+     * @param projectId         the project id
+     * @param taskName          the task name
+     * @param creationTimestamp the creation timestamp
      */
     public Task(
             long taskId,

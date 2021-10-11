@@ -69,7 +69,7 @@ public class TaskDaoTest {
     }
 
     @After
-    public void closeAndClearDb() throws IOException {
+    public void closeAndClearDb() {
         mTodocDatabase.close();
         // mTodocDatabase.clearAllTables();
     }
@@ -98,61 +98,61 @@ public class TaskDaoTest {
     }
 
     @Test
-    public void insertOneTask() throws InterruptedException {
-        // Given : insert Project and add 1 task and set this id
+    public void insertOneTask() {
+        // Given : insert Projects and add 1 task and set this id
         this.insertTestProjects();
         mTaskDao.insert(TASK_TEST_1);
         TASK_TEST_1.setTaskId(EXPECTED_TASK_ID_1);
         // When : we set a RelationTaskWithProject
-        RelationTaskWithProject EXPECTED_RELATIONTASKWITHPROJECT_1 = new RelationTaskWithProject();
-        EXPECTED_RELATIONTASKWITHPROJECT_1.setTask(TASK_TEST_1);
-        EXPECTED_RELATIONTASKWITHPROJECT_1.setProject(PROJECT_TEST_1);
+        RelationTaskWithProject expectedRelationtaskwithproject1 = new RelationTaskWithProject();
+        expectedRelationtaskwithproject1.setTask(TASK_TEST_1);
+        expectedRelationtaskwithproject1.setProject(PROJECT_TEST_1);
         // Then : we check it's the correct task and project
-        assertEquals(EXPECTED_RELATIONTASKWITHPROJECT_1.getTask(), TASK_TEST_1);
-        assertEquals(EXPECTED_RELATIONTASKWITHPROJECT_1.getProject(), PROJECT_TEST_1);
+        assertEquals(expectedRelationtaskwithproject1.getTask(), TASK_TEST_1);
+        assertEquals(expectedRelationtaskwithproject1.getProject(), PROJECT_TEST_1);
     }
 
     @Test
-    public void insertTwoTask() throws InterruptedException {
-        // Given : insert Project and add 2 tasks and set there ids
+    public void insertTwoTask() {
+        // Given : insert Projects and add 2 tasks and set there ids
         this.insertTestProjects();
         mTaskDao.insert(TASK_TEST_1);
         TASK_TEST_1.setTaskId(EXPECTED_TASK_ID_1);
         mTaskDao.insert(TASK_TEST_2);
         TASK_TEST_2.setTaskId(EXPECTED_TASK_ID_2);
         // When : we set 2 RelationTaskWithProject
-        RelationTaskWithProject EXPECTED_RELATIONTASKWITHPROJECT_1 = new RelationTaskWithProject();
-        EXPECTED_RELATIONTASKWITHPROJECT_1.setTask(TASK_TEST_1);
-        EXPECTED_RELATIONTASKWITHPROJECT_1.setProject(PROJECT_TEST_1);
+        RelationTaskWithProject expectedRelationtaskwithproject1 = new RelationTaskWithProject();
+        expectedRelationtaskwithproject1.setTask(TASK_TEST_1);
+        expectedRelationtaskwithproject1.setProject(PROJECT_TEST_1);
 
-        RelationTaskWithProject EXPECTED_RELATIONTASKWITHPROJECT_2 = new RelationTaskWithProject();
-        EXPECTED_RELATIONTASKWITHPROJECT_2.setTask(TASK_TEST_2);
-        EXPECTED_RELATIONTASKWITHPROJECT_2.setProject(PROJECT_TEST_2);
+        RelationTaskWithProject expectedRelationtaskwithproject2 = new RelationTaskWithProject();
+        expectedRelationtaskwithproject2.setTask(TASK_TEST_2);
+        expectedRelationtaskwithproject2.setProject(PROJECT_TEST_2);
 
         // Then : we check it's the correct tasks and projects
-        assertEquals(EXPECTED_RELATIONTASKWITHPROJECT_1.getTask(), TASK_TEST_1);
-        assertEquals(EXPECTED_RELATIONTASKWITHPROJECT_1.getProject(), PROJECT_TEST_1);
-        assertEquals(EXPECTED_RELATIONTASKWITHPROJECT_2.getTask(), TASK_TEST_2);
-        assertEquals(EXPECTED_RELATIONTASKWITHPROJECT_2.getProject(), PROJECT_TEST_2);
+        assertEquals(expectedRelationtaskwithproject1.getTask(), TASK_TEST_1);
+        assertEquals(expectedRelationtaskwithproject1.getProject(), PROJECT_TEST_1);
+        assertEquals(expectedRelationtaskwithproject2.getTask(), TASK_TEST_2);
+        assertEquals(expectedRelationtaskwithproject2.getProject(), PROJECT_TEST_2);
 
     }
 
     @Test
     public void deleteOneTask() throws InterruptedException {
-        // Given : insert Project and add 1 tasks and set this id
+        // Given : insert Projects and add 1 tasks and set this id
         this.insertTestProjects();
         mTaskDao.insert(TASK_TEST_3);
         TASK_TEST_3.setTaskId(EXPECTED_TASK_ID_3);
         // When : we delete task with delete() and get the list of RelationTaskWithProject with getAllTasks()
         mTaskDao.delete(TASK_TEST_3);
         List<RelationTaskWithProject> relationTaskWithProjectList = LiveDataTestUtils.getOrAwaitValue(mTaskDao.getAllTasks());
-        // Then : we call list and check she's empty
+        // Then :  check relationTaskWithProjectList is empty
         assertTrue(relationTaskWithProjectList.isEmpty());
     }
 
     @Test
     public void deleteOneOfTwoTaskById() throws InterruptedException {
-        // Given : insert Project and add 2 tasks and set there id
+        // Given : insert Projects and add 2 tasks and set there id
         mTaskDao.insert(TASK_TEST_2);
         TASK_TEST_2.setTaskId(EXPECTED_TASK_ID_3);
         mTaskDao.insert(TASK_TEST_3);
@@ -168,7 +168,7 @@ public class TaskDaoTest {
 
     @Test
     public void insertAndGetAllRelationTaskWithProjectByNameAZ() throws InterruptedException {
-        // Given : add 3 project , add 3 tasks and set there tasks ids
+        // Given : add 3 projects , add 3 tasks and set there tasks ids
         this.insertTestProjects();
         this.insertTestTasks();
         this.setTestTasksIds();
@@ -188,7 +188,7 @@ public class TaskDaoTest {
 
     @Test
     public void insertAndGetAllRelationTaskWithProjectByNameZA() throws InterruptedException {
-        // Given : All 3 project and add 3 tasks
+        // Given : add 3 projects , add 3 tasks and set there tasks ids
         this.insertTestProjects();
         this.insertTestTasks();
         this.setTestTasksIds();
@@ -208,7 +208,7 @@ public class TaskDaoTest {
 
     @Test
     public void insertAndGetAllRelationTaskWithProjectByTimeStampOld() throws InterruptedException {
-        // Given : All 3 project and add 3 tasks
+        // Given : add 3 projects , add 3 tasks and set there tasks ids
         this.insertTestProjects();
         this.insertTestTasks();
         this.setTestTasksIds();
@@ -228,7 +228,7 @@ public class TaskDaoTest {
 
     @Test
     public void insertAndGetAllRelationTaskWithProjectByTimeStampRecent() throws InterruptedException {
-        // Given : All 3 project and add 3 tasks
+        // Given : add 3 projects , add 3 tasks and set there tasks ids
         this.insertTestProjects();
         this.insertTestTasks();
         this.setTestTasksIds();

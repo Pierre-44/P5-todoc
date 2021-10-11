@@ -27,13 +27,33 @@ public class TaskRepository {
     private Executor doInBackground;
 
     private LiveData<List<Project>> allProjects;
+    /**
+     * The All tasks.
+     */
     public LiveData<List<RelationTaskWithProject>> allTasks;
+    /**
+     * The All tasks livedata az.
+     */
     public LiveData<List<RelationTaskWithProject>> allTasksLivedataAZ;
+    /**
+     * The All tasks livedata za.
+     */
     public LiveData<List<RelationTaskWithProject>> allTasksLivedataZA;
+    /**
+     * The All tasks livedata old.
+     */
     public LiveData<List<RelationTaskWithProject>> allTasksLivedataOld;
+    /**
+     * The All tasks livedata recent.
+     */
     public LiveData<List<RelationTaskWithProject>> allTasksLivedataRecent;
 
-    // Constructor
+    /**
+     * Instantiates a new Task repository.
+     *
+     * @param context the context
+     */
+// Constructor
     public TaskRepository(Context context) {
 
         TodocDatabase todocDatabase = TodocDatabase.getInstance(context);
@@ -48,6 +68,11 @@ public class TaskRepository {
         doInBackground = Executors.newFixedThreadPool(2);
     }
 
+    /**
+     * Instantiates a new Task repository.
+     *
+     * @param taskDao the task dao
+     */
     @VisibleForTesting
     public TaskRepository(TaskDao taskDao) {
         mTaskDao = taskDao;
@@ -56,45 +81,98 @@ public class TaskRepository {
 
     // methods of interface
 
+    /**
+     * Insert.
+     *
+     * @param task the task to insert
+     */
     public void insert(Task task) {
         doInBackground.execute(() -> mTaskDao.insert(task));
     }
 
+    /**
+     * Delete.
+     *
+     * @param task the task to delete
+     */
     public void delete(Task task) {
         doInBackground.execute(() -> mTaskDao.delete(task));
     }
 
+    /**
+     * Delete task by id.
+     *
+     * @param taskId the id of task to delete
+     */
     public void deleteTaskById(long taskId) {
         doInBackground.execute(() -> mTaskDao.deleteTaskById(taskId));
     }
 
+
+    /**
+     * Update. (not use yet)
+     *
+     * @param task the task to update
+     *
+     */
     public void update(Task task) {
         doInBackground.execute(() -> mTaskDao.update(task));
     }
 
     // getter
 
-    public LiveData<List<RelationTaskWithProject>> getAllTasks() {
+    /**
+     * Gets all relation task with project.
+     *
+     * @return the all relation task with project to get
+     */
+    public LiveData<List<RelationTaskWithProject>> getAllRelationTaskWithProjectLiveData() {
         return allTasks;
     }
 
+    /**
+     * Gets all tasks livedata az.
+     *
+     * @return the all tasks livedata az to get
+     */
     public LiveData<List<RelationTaskWithProject>> getAllTasksLivedataAZ() {
         return allTasksLivedataAZ;
     }
 
+    /**
+     * Gets all tasks livedata za.
+     *
+     * @return the all tasks livedata za to get
+     */
     public LiveData<List<RelationTaskWithProject>> getAllTasksLivedataZA() {
         return allTasksLivedataZA;
     }
 
+    /**
+     * Gets all tasks livedata old.
+     *
+     * @return the all tasks livedata old to get
+     */
     public LiveData<List<RelationTaskWithProject>> getAllTasksLivedataOld() {
         return allTasksLivedataOld;
     }
 
+    /**
+     * Gets all tasks livedata recent.
+     *
+     * @return the all tasks livedata recent to get
+     */
     public LiveData<List<RelationTaskWithProject>> getAllTasksLivedataRecent() {
         return allTasksLivedataRecent;
     }
 
     // setter
+
+    /**
+     * Sets do in background.
+     *
+     * @param doInBackground the do in background
+     */
     public void setDoInBackground(Executor doInBackground) {
         this.doInBackground = doInBackground;
     }

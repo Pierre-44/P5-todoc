@@ -8,7 +8,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
@@ -40,11 +39,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     // fields
 
     /**
-     * List of all projects available in the application
-     */
-    private Project[] allProjects ;
-
-    /**
      * The adapter which handles the list of tasks
      */
     private final TasksAdapter adapter = new TasksAdapter(this);
@@ -54,10 +48,14 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     @Nullable
     public AlertDialog dialog = null;
     /**
+     * List of all projects available in the application
+     */
+    private Project[] allProjects;
+    /**
      * The sort method to be used to display tasks
      */
-    @NonNull
-    private Utils.SortMethod mSortingTypes;
+
+    private Utils.SortMethod mSortingTypes = Utils.SortMethod.NONE;
     /**
      * EditText that allows user to set the name of a task
      */
@@ -69,22 +67,19 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      */
     @Nullable
     private Spinner dialogSpinner = null;
+
     /**
      * The RecyclerView which displays the list of tasks
      */
-    @NonNull
     private RecyclerView listTasks;
 
     /**
      * The TextView displaying the empty state
      */
-
-    @NonNull
     private TextView lblNoTasks;
     /**
      * Floating action button to add a new task
      */
-    @Nullable
     private FloatingActionButton fabAddTask;
 
     @Nullable
@@ -92,8 +87,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
     private ActivityMainBinding binding;
     private MainViewModel viewModel;
-
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -113,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         TodocContainer container = new TodocContainer(getApplication());
 
         // RecyclerView for the list of task
-        listTasks = binding.listTasks  ;
+        listTasks = binding.listTasks;
         binding.listTasks.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         listTasks.setAdapter(adapter);
         listTasks.setHasFixedSize(true);
@@ -179,10 +172,14 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         dialog.show(fm, "add task");
     }
 
+    /**
+     * Insert task.
+     *
+     * @param task the task to insert
+     */
     public void insertTask(Task task) {
         viewModel.insertTask(task);
     }
-
 
     /**
      * Called when task item is long clicked
@@ -195,6 +192,8 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     }
 
     /**
+     * Gets task adapter count.
+     *
      * @return for test the adapter item count
      */
     @VisibleForTesting

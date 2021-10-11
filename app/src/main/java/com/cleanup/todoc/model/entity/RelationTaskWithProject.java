@@ -20,18 +20,38 @@ public class RelationTaskWithProject {
 
     private Project mProject;
 
+    /**
+     * Gets task.
+     *
+     * @return the task to get
+     */
     public Task getTask() {
         return mTask;
     }
 
+    /**
+     * Sets task.
+     *
+     * @param task the task to set
+     */
     public void setTask(Task task) {
         this.mTask = task;
     }
 
+    /**
+     * Gets project.
+     *
+     * @return the project to get
+     */
     public Project getProject() {
         return mProject;
     }
 
+    /**
+     * Sets project.
+     *
+     * @param project the project to set
+     */
     public void setProject(Project project) {
         this.mProject = project;
     }
@@ -42,8 +62,7 @@ public class RelationTaskWithProject {
     }
 
 
-
-//--------------------------------------------------
+    //--------------------------------------------------
     // RelationTaskWithProject Comparator
     //--------------------------------------------------
 

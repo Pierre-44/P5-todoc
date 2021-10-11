@@ -2,6 +2,7 @@ package com.cleanup.todoc.ui;
 
 import static com.cleanup.todoc.ui.Utils.SortMethod.NONE;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -26,36 +27,49 @@ import java.util.concurrent.Executor;
  */
 public class MainViewModel extends ViewModel {
 
+    //Executor
+    private static Executor mExecutor;
     //Repository
     private final ProjectRepository mProjectRepository;
     private final TaskRepository mTaskRepository;
-    private final Executor mExecutor;
-
+    // Live Data
     private final LiveData<List<Project>> allProjects;
     private final LiveData<List<RelationTaskWithProject>> allTasksLivedataAZ;
     private final LiveData<List<RelationTaskWithProject>> allTasksLivedataZA;
     private final LiveData<List<RelationTaskWithProject>> allTasksLivedataOld;
     private final LiveData<List<RelationTaskWithProject>> allTasksLivedataRecent;
+
     // Sorting
+    /**
+     * The sorting type mutable live data.
+     */
     public MutableLiveData<SortMethod> mSortingTypeMutableLiveData = new MutableLiveData<>();
+    /**
+     * The list task live data.
+     */
     public LiveData<List<RelationTaskWithProject>> mListTaskLiveData;
+    /**
+     * The sorted list mediator live data.
+     */
     public MediatorLiveData<List<RelationTaskWithProject>> mSortedListMediatorLiveData = new MediatorLiveData<>();
 
     // fields
     private TaskDao taskDao;
     private ProjectDao projectDao;
 
+    // Constructor
     /**
      * Instantiates a new Main view model.
      *
-     * @param taskRepository the task repository
+     * @param projectRepository the project repository
+     * @param taskRepository    the task repository
+     * @param executor          the executor
      */
-// Constructor
     public MainViewModel(ProjectRepository projectRepository, TaskRepository taskRepository, Executor executor) {
 
         this.mProjectRepository = projectRepository;
         this.mTaskRepository = taskRepository;
-        this.mExecutor = executor;
+        mExecutor = executor;
 
         allProjects = projectRepository.getAllProjectsLiveData();
         mSortingTypeMutableLiveData.setValue(NONE);
@@ -64,9 +78,8 @@ public class MainViewModel extends ViewModel {
         allTasksLivedataOld = mTaskRepository.getAllTasksLivedataOld();
         allTasksLivedataRecent = mTaskRepository.getAllTasksLivedataRecent();
 
-
         //Adding data as source to mediator
-        mListTaskLiveData = mTaskRepository.getAllTasks();
+        mListTaskLiveData = mTaskRepository.getAllRelationTaskWithProjectLiveData();
         mSortedListMediatorLiveData.addSource(mListTaskLiveData,
                 relationTaskWithProjects -> mSortedListMediatorLiveData
                         .setValue(combineDataAndSortingType(mListTaskLiveData, mSortingTypeMutableLiveData)));
@@ -77,9 +90,37 @@ public class MainViewModel extends ViewModel {
                         .setValue(combineDataAndSortingType(mListTaskLiveData, mSortingTypeMutableLiveData)));
     }
 
+    /**
+     * Instantiates a new Main view model.
+     *
+     * @param projectRepository the project repository
+     * @param taskRepository    the task repository
+     */
+    @VisibleForTesting
+    public MainViewModel(ProjectRepository projectRepository, TaskRepository taskRepository) {
+        mProjectRepository = projectRepository;
+        mTaskRepository = taskRepository;
+
+        allProjects = projectRepository.getAllProjectsLiveData();
+        mSortingTypeMutableLiveData.setValue(NONE);
+        allTasksLivedataAZ = mTaskRepository.getAllTasksLivedataAZ();
+        allTasksLivedataZA = mTaskRepository.getAllTasksLivedataZA();
+        allTasksLivedataOld = mTaskRepository.getAllTasksLivedataOld();
+        allTasksLivedataRecent = mTaskRepository.getAllTasksLivedataRecent();
+    }
+
+    /**
+     * Gets executor.
+     *
+     * @return the executor
+     */
+    public static Executor getExecutor() {
+        return mExecutor;
+    }
 
     /**
      * Sort the task list depending on active sorting method and set related live data
+     *
      * @return sorted list with combine data ans sorting type
      */
     private List<RelationTaskWithProject> combineDataAndSortingType(LiveData<List<RelationTaskWithProject>> tasksLiveData, MutableLiveData<SortMethod> sortingTypeLiveData) {
@@ -110,19 +151,39 @@ public class MainViewModel extends ViewModel {
         }
     }
 
+    /**
+     * Delete task.
+     *
+     * @param task the task to deleted
+     */
     public void deleteTask(Task task) {
         mTaskRepository.delete(task);
     }
 
-    public void deleteTaskById(final long id){
+    /**
+     * Delete task by id.
+     *
+     * @param id the id of task to delete
+     */
+    public void deleteTaskById(final long id) {
         mTaskRepository.deleteTaskById(id);
     }
 
-    public void insertProject(Project project){
+    /**
+     * Insert project.
+     *
+     * @param project the project to insert
+     */
+    public void insertProject(Project project) {
         mProjectRepository.insert(project);
     }
 
-    public void insertTask(Task task){
+    /**
+     * Insert task.
+     *
+     * @param task the task to insert
+     */
+    public void insertTask(Task task) {
         mTaskRepository.insert(task);
     }
 
@@ -132,7 +193,8 @@ public class MainViewModel extends ViewModel {
      * @param sortMethod the sorting method selected
      */
     public void setSorting(SortMethod sortMethod) {
-        if (sortMethod != null) { // Useful when clicking on menu icon
+        if (sortMethod != null) {
+            // Useful when clicking on menu icon
             this.mSortingTypeMutableLiveData.setValue(sortMethod);
         }
     }
