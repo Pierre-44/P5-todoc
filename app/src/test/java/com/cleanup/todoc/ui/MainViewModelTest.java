@@ -43,6 +43,33 @@ public class MainViewModelTest {
     // Fields
     //--------------------------------------------------
 
+    //MainViewModel LiveDatas from repo to be mocked
+    private final MutableLiveData<List<Project>> mListOfProjectMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<RelationTaskWithProject>> mListOfRelationTaskWithProjectMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<RelationTaskWithProject>> mListOfRelationTaskWithProjectAZMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<RelationTaskWithProject>> mListOfRelationTaskWithProjectZAMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<RelationTaskWithProject>> mListOfRelationTaskWithProjectOldMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<RelationTaskWithProject>> mListOfRelationTaskWithProjectRecentMutableLiveData = new MutableLiveData<>();
+    @Rule
+    public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
+    //set Task  :
+    Task testTask0 = new Task(0, 1, "I task 0", new Date().getTime());
+    Task testTask1 = new Task(1, 1, "H task 1", new Date().getTime() + 1);
+    Task testTask2 = new Task(2, 1, "G task 2", new Date().getTime() + 2);
+
+    //--------------------------------------------------
+    // Test Rules , before and after
+    //--------------------------------------------------
+    Task testTask3 = new Task(3, 2, "F task 3", new Date().getTime() + 3);
+    Task testTask4 = new Task(4, 2, "E task 4", new Date().getTime() + 4);
+    Task testTask5 = new Task(5, 2, "D task 5", new Date().getTime() + 5);
+
+    //--------------------------------------------------
+    // MAIN VIEW MODEL TEST
+    //--------------------------------------------------
+    Task testTask6 = new Task(6, 3, "C task 6", new Date().getTime() + 6);
+    Task testTask7 = new Task(7, 3, "B task 7", new Date().getTime() + 7);
+    Task testTask8 = new Task(8, 3, "A task 8", new Date().getTime() + 8);
     @Mock // ProjectRepository to use on test
     private ProjectRepository mockProjectRepository;
     @Mock // TaskRepository to use on test
@@ -51,21 +78,6 @@ public class MainViewModelTest {
     private MainViewModel underTestMainViewModel;
     // Executor to use on test
     private Executor testExecutor = MainViewModel.getExecutor();
-
-    //MainViewModel LiveDatas from repo to be mocked
-    private final MutableLiveData<List<Project>> mListOfProjectMutableLiveData = new MutableLiveData<>();
-    private final MutableLiveData<List<RelationTaskWithProject>> mListOfRelationTaskWithProjectMutableLiveData = new MutableLiveData<>();
-    private final MutableLiveData<List<RelationTaskWithProject>> mListOfRelationTaskWithProjectAZMutableLiveData = new MutableLiveData<>();
-    private final MutableLiveData<List<RelationTaskWithProject>> mListOfRelationTaskWithProjectZAMutableLiveData = new MutableLiveData<>();
-    private final MutableLiveData<List<RelationTaskWithProject>> mListOfRelationTaskWithProjectOldMutableLiveData = new MutableLiveData<>();
-    private final MutableLiveData<List<RelationTaskWithProject>> mListOfRelationTaskWithProjectRecentMutableLiveData = new MutableLiveData<>();
-
-    //--------------------------------------------------
-    // Test Rules , before and after
-    //--------------------------------------------------
-
-    @Rule
-    public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     @Before
     public void setUp() {
@@ -78,16 +90,23 @@ public class MainViewModelTest {
         mocking_mListOfRelationTaskWithProjectRecentMutableLiveData();
 
         //Instantiate MainViewModel for testing, passing mocked repositories
-        underTestMainViewModel = new MainViewModel(mockProjectRepository,mockTaskRepository);
+        underTestMainViewModel = new MainViewModel(mockProjectRepository, mockTaskRepository);
 
     }
+
+    //--------------------------------------------------
+    // END OF MAIN VIEW MODEL TEST
+    //--------------------------------------------------
+
+    //--------------------------------------------------
+    // METHODS FOR TESTING
+    //--------------------------------------------------
+
+    //Mocking repositories LiveData
+
     @After
     public void tearDown() {
     }
-
-    //--------------------------------------------------
-    // MAIN VIEW MODEL TEST
-    //--------------------------------------------------
 
     @Test
     public void test_insertProject() {
@@ -132,7 +151,7 @@ public class MainViewModelTest {
     @Test
     public void test_az_comparator() {
         // Given : set list of task for test
-        List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest() ;
+        List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest();
         // When : sorted with task comparator
         Collections.sort(allTaskWithProjects, new RelationTaskWithProject.TaskAZComparator());
         // Then : check the order of task
@@ -145,7 +164,7 @@ public class MainViewModelTest {
     @Test
     public void test_za_comparator() {
         // Given : set list of task for test
-        List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest() ;
+        List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest();
         // When : sorted with task comparator
         Collections.sort(allTaskWithProjects, new RelationTaskWithProject.TaskZAComparator());
         // Then : check the order of task
@@ -157,7 +176,7 @@ public class MainViewModelTest {
     @Test
     public void test_recent_comparator() {
         // Given : set list of task for test
-        List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest() ;
+        List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest();
         // When : sorted with task comparator
         Collections.sort(allTaskWithProjects, new RelationTaskWithProject.TaskRecentComparator());
         // Then : check the order of task
@@ -169,7 +188,7 @@ public class MainViewModelTest {
     @Test
     public void test_old_comparator() {
         // Given : set list of task for test
-        List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest() ;
+        List<RelationTaskWithProject> allTaskWithProjects = getRelationTaskWithProjectsForTest();
         // When : sorted with task comparator
         Collections.sort(allTaskWithProjects, new RelationTaskWithProject.TaskOldComparator());
         // Then : check the order of task
@@ -178,26 +197,15 @@ public class MainViewModelTest {
         assertSame(allTaskWithProjects.get(5).getTask(), testTask5);
     }
 
-    //--------------------------------------------------
-    // END OF MAIN VIEW MODEL TEST
-    //--------------------------------------------------
-
-    //--------------------------------------------------
-    // METHODS FOR TESTING
-    //--------------------------------------------------
-
-    //Mocking repositories LiveData
-
     private void mocking_mListOfProjectMutableLiveData() {
         mListOfProjectMutableLiveData.setValue(getAllProjectsForTest());
         doReturn(mListOfProjectMutableLiveData).when(mockProjectRepository).getAllProjectsLiveData();
     }
 
     private void mocking_mListOfRelationTaskWithProjectMutableLiveData() {
-       List<RelationTaskWithProject> allRelationTaskWithProjects = getRelationTaskWithProjectsForTest();
+        List<RelationTaskWithProject> allRelationTaskWithProjects = getRelationTaskWithProjectsForTest();
 
         mListOfRelationTaskWithProjectMutableLiveData.setValue(allRelationTaskWithProjects);
-        doReturn(mListOfRelationTaskWithProjectMutableLiveData).when(mockTaskRepository).getAllRelationTaskWithProjectLiveData();
     }
 
     private void mocking_mListOfRelationTaskWithProjectAZMutableLiveData() {
@@ -264,17 +272,6 @@ public class MainViewModelTest {
         doReturn(mListOfRelationTaskWithProjectRecentMutableLiveData).when(mockTaskRepository).getAllTasksLivedataRecent();
     }
 
-    //set Task  :
-    Task testTask0 = new Task(0, 1,"I task 0" ,new Date().getTime() );
-    Task testTask1 = new Task(1, 1,"H task 1" ,new Date().getTime()+1);
-    Task testTask2 = new Task(2, 1,"G task 2" ,new Date().getTime()+2);
-    Task testTask3 = new Task(3, 2,"F task 3" ,new Date().getTime()+3);
-    Task testTask4 = new Task(4, 2,"E task 4" ,new Date().getTime()+4);
-    Task testTask5 = new Task(5, 2,"D task 5" ,new Date().getTime()+5);
-    Task testTask6 = new Task(6, 3,"C task 6" ,new Date().getTime()+6);
-    Task testTask7 = new Task(7, 3,"B task 7" ,new Date().getTime()+7);
-    Task testTask8 = new Task(8, 3,"A task 8" ,new Date().getTime()+8);
-
     private List<RelationTaskWithProject> getRelationTaskWithProjectsForTest() {
 
         //relationTaskWithProject0
@@ -329,7 +326,7 @@ public class MainViewModelTest {
     }
 
     // Setting Project Tasks and RelationTaskWithProject
-    private List<Project>getAllProjectsForTest() {
+    private List<Project> getAllProjectsForTest() {
         List<Project> allProject = Arrays.asList(
                 new Project("Test Project 1", Color.BLUE),
                 new Project("Test Project 1", Color.BLUE),
