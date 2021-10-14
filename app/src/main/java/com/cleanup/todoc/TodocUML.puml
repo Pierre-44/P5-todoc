@@ -1,0 +1,398 @@
+@startuml
+
+title __TOTOC's Class Diagram__\n
+
+
+
+  namespace com.cleanup.todoc {
+    namespace di {
+      class com.cleanup.todoc.di.TodocApplication {
+          {static} + sTodocContainer : TodocContainer
+          + onCreate()
+      }
+    }
+  }
+
+  namespace com.cleanup.todoc {
+    namespace di {
+      class com.cleanup.todoc.di.TodocContainer {
+          + TodocContainer()
+          + getProjectRepository()
+          + getTaskRepository()
+      }
+    }
+  }
+
+  namespace com.cleanup.todoc {
+    namespace di {
+      class com.cleanup.todoc.di.ViewModelFactory {
+          {static} - factory : ViewModelFactory
+          - mExecutor : Executor
+          + create()
+          {static} + getInstance()
+          - ViewModelFactory()
+      }
+    }
+  }
+
+  namespace com.cleanup.todoc {
+    namespace db {
+      abstract class com.cleanup.todoc.db.TodocDatabase {
+          {static} - instanceDB : TodocDatabase
+          {static} - roomCallback : Callback
+          {static} + getInstance()
+          {abstract} + mProjectDao()
+          {abstract} + mTaskDao()
+          {static} - populateProjectsInDb()
+      }
+    }
+  }
+
+  namespace com.cleanup.todoc {
+    namespace model.repository {
+      class com.cleanup.todoc.model.repository.ProjectRepository {
+          - allProjects : LiveData<List<Project>>
+          - doInBackground : Executor
+          + ProjectRepository()
+          + ProjectRepository()
+          + delete()
+          + getAllProjectsLiveData()
+          + insert()
+          + setDoInBackground()
+      }
+    }
+  }
+
+  namespace com.cleanup.todoc {
+    namespace model.repository {
+      class com.cleanup.todoc.model.repository.TaskRepository {
+          + allTasks : LiveData<List<RelationTaskWithProject>>
+          + allTasksLivedataAZ : LiveData<List<RelationTaskWithProject>>
+          + allTasksLivedataOld : LiveData<List<RelationTaskWithProject>>
+          + allTasksLivedataRecent : LiveData<List<RelationTaskWithProject>>
+          + allTasksLivedataZA : LiveData<List<RelationTaskWithProject>>
+          - allProjects : LiveData<List<Project>>
+          - doInBackground : Executor
+          + TaskRepository()
+          + TaskRepository()
+          + delete()
+          + deleteTaskById()
+          + getAllRelationTaskWithProjectLiveData()
+          + getAllTasksLivedataAZ()
+          + getAllTasksLivedataOld()
+          + getAllTasksLivedataRecent()
+          + getAllTasksLivedataZA()
+          + insert()
+          + setDoInBackground()
+          + update()
+      }
+    }
+  }
+
+  namespace com.cleanup.todoc {
+    namespace model.dao {
+      interface com.cleanup.todoc.model.dao.ProjectDao {
+          {abstract} + delete()
+          {abstract} + deleteAllProjects()
+          {abstract} + getAllProjects()
+          {abstract} + insert()
+      }
+    }
+  }
+
+  namespace com.cleanup.todoc {
+    namespace model.dao {
+      interface com.cleanup.todoc.model.dao.TaskDao {
+          {abstract} + delete()
+          {abstract} + deleteAllTasks()
+          {abstract} + deleteTaskById()
+          {abstract} + getAllTasks()
+          {abstract} + getAllTasksByNameAZ()
+          {abstract} + getAllTasksByNameZA()
+          {abstract} + getAllTasksByTimeStampOld()
+          {abstract} + getAllTasksByTimeStampRecent()
+          {abstract} + insert()
+          {abstract} + update()
+      }
+    }
+  }
+
+  namespace com.cleanup.todoc {
+    namespace model.entity {
+      class com.cleanup.todoc.model.entity.Project {
+          - projectColor : int
+          - projectId : long
+          - projectName : String
+          + Project()
+          + equals()
+          + getProjectColor()
+          + getProjectId()
+          + getProjectName()
+          + setProjectId()
+          + toString()
+      }
+    }
+  }
+
+  namespace com.cleanup.todoc {
+    namespace model.entity {
+      class com.cleanup.todoc.model.entity.RelationTaskWithProject {
+          + equals()
+          + getProject()
+          + getTask()
+          + setProject()
+          + setTask()
+      }
+    }
+  }
+
+  namespace com.cleanup.todoc {
+    namespace model.entity {
+      class com.cleanup.todoc.model.entity.RelationTaskWithProject.TaskAZComparator {
+          + compare()
+      }
+    }
+  }
+
+
+  namespace com.cleanup.todoc {
+    namespace model.entity {
+      class com.cleanup.todoc.model.entity.RelationTaskWithProject.TaskOldComparator {
+          + compare()
+      }
+    }
+  }
+
+
+  namespace com.cleanup.todoc {
+    namespace model.entity {
+      class com.cleanup.todoc.model.entity.RelationTaskWithProject.TaskRecentComparator {
+          + compare()
+      }
+    }
+  }
+
+
+  namespace com.cleanup.todoc {
+    namespace model.entity {
+      class com.cleanup.todoc.model.entity.RelationTaskWithProject.TaskZAComparator {
+          + compare()
+      }
+    }
+  }
+
+
+  namespace com.cleanup.todoc {
+    namespace model.entity {
+      class com.cleanup.todoc.model.entity.Task {
+          - creationTimestamp : long
+          - projectId : long
+          - taskId : long
+          - taskName : String
+          + Task()
+          + equals()
+          + getCreationTimestamp()
+          + getProjectId()
+          + getTaskId()
+          + getTaskName()
+          + hashCode()
+          + setTaskId()
+          - setCreationTimestamp()
+          - setProjectId()
+          - setTaskName()
+      }
+    }
+  }
+
+  namespace com.cleanup.todoc {
+    namespace ui {
+      class com.cleanup.todoc.ui.AddTaskDialogFragment {
+          - allProjects : List<Project>
+          - dialog : AlertDialog
+          - dialogEditText : EditText
+          - dialogSpinner : Spinner
+          + AddTaskDialogFragment()
+          {static} + newInstance()
+          + onCreate()
+          + onCreateDialog()
+          + onDestroyView()
+          - addTask()
+          - onPositiveButtonClick()
+          - populateDialogSpinner()
+      }
+    }
+  }
+
+  namespace com.cleanup.todoc {
+    namespace ui {
+      class com.cleanup.todoc.ui.AddTaskViewModel {
+          - mExecutor : Executor
+          - mProjects : LiveData<List<Project>>
+          + AddTaskViewModel()
+          + getProjects()
+          + insertTask()
+      }
+    }
+  }
+
+  namespace com.cleanup.todoc {
+    namespace ui {
+      class com.cleanup.todoc.ui.MainActivity {
+          + dialog : AlertDialog
+          - allProjects : Project[]
+          - dialogEditText : EditText
+          - dialogSpinner : Spinner
+          - fabAddTask : FloatingActionButton
+          - lblNoTasks : TextView
+          - listTasks : RecyclerView
+          + getTaskAdapterCount()
+          + init()
+          + insertTask()
+          + onCreate()
+          + onCreateOptionsMenu()
+          + onDeleteTask()
+          + onOptionsItemSelected()
+          - showAddTaskAlertDialog()
+      }
+    }
+  }
+
+  namespace com.cleanup.todoc {
+    namespace ui {
+      class com.cleanup.todoc.ui.MainViewModel {
+          + mListTaskLiveData : LiveData<List<RelationTaskWithProject>>
+          + mSortedListMediatorLiveData : MediatorLiveData<List<RelationTaskWithProject>>
+          + mSortingTypeMutableLiveData : MutableLiveData<SortMethod>
+          - allProjects : LiveData<List<Project>>
+          - allTasksLivedataAZ : LiveData<List<RelationTaskWithProject>>
+          - allTasksLivedataOld : LiveData<List<RelationTaskWithProject>>
+          - allTasksLivedataRecent : LiveData<List<RelationTaskWithProject>>
+          - allTasksLivedataZA : LiveData<List<RelationTaskWithProject>>
+          {static} - mExecutor : Executor
+          + MainViewModel()
+          + MainViewModel()
+          + deleteTask()
+          + deleteTaskById()
+          {static} + getExecutor()
+          + insertProject()
+          + insertTask()
+          + setSorting()
+          - combineDataAndSortingType()
+      }
+    }
+  }
+
+  namespace com.cleanup.todoc {
+    namespace ui {
+      class com.cleanup.todoc.ui.TasksAdapter {
+          - mRelationTaskWithProjects : List<RelationTaskWithProject>
+          + TasksAdapter()
+          + getItemCount()
+          + onBindViewHolder()
+          + onCreateViewHolder()
+          ~ updateTasks()
+      }
+    }
+  }
+
+  namespace com.cleanup.todoc {
+    namespace ui {
+      interface com.cleanup.todoc.ui.TasksAdapter.DeleteTaskListener {
+          {abstract} + onDeleteTask()
+      }
+    }
+  }
+
+  namespace com.cleanup.todoc {
+    namespace ui {
+      class com.cleanup.todoc.ui.TasksAdapter.TaskViewHolder {
+          - imgDelete : AppCompatImageView
+          - imgProject : AppCompatImageView
+          - lblProjectName : TextView
+          - lblTaskName : TextView
+          + TaskViewHolder()
+      }
+    }
+  }
+
+  namespace com.cleanup.todoc {
+    namespace ui {
+      abstract class com.cleanup.todoc.ui.Utils {
+      }
+    }
+  }
+
+
+  namespace com.cleanup.todoc {
+    namespace ui {
+      enum SortMethod {
+        ALPHABETICAL
+        ALPHABETICAL_INVERTED
+        NONE
+        OLD_FIRST
+        RECENT_FIRST
+      }
+    }
+  }
+
+  com.cleanup.todoc.di.TodocApplication -up-|> android.app.Application
+  com.cleanup.todoc.di.TodocContainer o-- com.cleanup.todoc.model.repository.ProjectRepository : mProjectRepository
+  com.cleanup.todoc.di.TodocContainer o-- com.cleanup.todoc.model.repository.TaskRepository : mTaskRepository
+  com.cleanup.todoc.di.ViewModelFactory .up.|> androidx.lifecycle.ViewModelProvider.Factory
+  com.cleanup.todoc.di.ViewModelFactory o-- com.cleanup.todoc.model.repository.ProjectRepository : projectRepository
+  com.cleanup.todoc.di.ViewModelFactory o-- com.cleanup.todoc.model.repository.TaskRepository : taskRepository
+
+  com.cleanup.todoc.db.TodocDatabase -up-|> androidx.room.RoomDatabase
+
+  com.cleanup.todoc.model.repository.ProjectRepository o-- com.cleanup.todoc.model.dao.ProjectDao : mProjectDao
+  com.cleanup.todoc.model.repository.TaskRepository o-- com.cleanup.todoc.model.dao.ProjectDao : mProjectDao
+  com.cleanup.todoc.model.repository.TaskRepository o-- com.cleanup.todoc.model.dao.TaskDao : mTaskDao
+
+  com.cleanup.todoc.model.entity.RelationTaskWithProject o-- com.cleanup.todoc.model.entity.Project : mProject
+  com.cleanup.todoc.model.entity.RelationTaskWithProject o-- com.cleanup.todoc.model.entity.Task : mTask
+  com.cleanup.todoc.model.entity.RelationTaskWithProject +-down- com.cleanup.todoc.model.entity.RelationTaskWithProject.TaskAZComparator
+  com.cleanup.todoc.model.entity.RelationTaskWithProject +-down- com.cleanup.todoc.model.entity.RelationTaskWithProject.TaskOldComparator
+  com.cleanup.todoc.model.entity.RelationTaskWithProject +-down- com.cleanup.todoc.model.entity.RelationTaskWithProject.TaskRecentComparator
+  com.cleanup.todoc.model.entity.RelationTaskWithProject +-down- com.cleanup.todoc.model.entity.RelationTaskWithProject.TaskZAComparator
+  com.cleanup.todoc.model.entity.RelationTaskWithProject.TaskAZComparator .up.|> java.util.Comparator
+  com.cleanup.todoc.model.entity.RelationTaskWithProject.TaskOldComparator .up.|> java.util.Comparator
+  com.cleanup.todoc.model.entity.RelationTaskWithProject.TaskRecentComparator .up.|> java.util.Comparator
+  com.cleanup.todoc.model.entity.RelationTaskWithProject.TaskZAComparator .up.|> java.util.Comparator
+
+  com.cleanup.todoc.ui.AddTaskDialogFragment -up-|> androidx.fragment.app.DialogFragment
+  com.cleanup.todoc.ui.AddTaskDialogFragment o-- com.cleanup.todoc.databinding.DialogAddTaskBinding : binding
+  com.cleanup.todoc.ui.AddTaskDialogFragment o-- com.cleanup.todoc.ui.AddTaskViewModel : mAddTaskViewModel
+  com.cleanup.todoc.ui.AddTaskViewModel -up-|> androidx.lifecycle.ViewModel
+  com.cleanup.todoc.ui.AddTaskViewModel o-- com.cleanup.todoc.model.repository.ProjectRepository : mProjectRepository
+  com.cleanup.todoc.ui.AddTaskViewModel o-- com.cleanup.todoc.model.repository.TaskRepository : mTaskRepository
+  com.cleanup.todoc.ui.MainActivity .up.|> com.cleanup.todoc.ui.TasksAdapter.DeleteTaskListener
+  com.cleanup.todoc.ui.MainActivity -up-|> androidx.appcompat.app.AppCompatActivity
+  com.cleanup.todoc.ui.MainActivity o-- com.cleanup.todoc.ui.TasksAdapter : adapter
+  com.cleanup.todoc.ui.MainActivity o-- com.cleanup.todoc.databinding.ActivityMainBinding : binding
+  com.cleanup.todoc.ui.MainActivity o-- com.cleanup.todoc.ui.Utils.SortMethod : mSortingTypes
+  com.cleanup.todoc.ui.MainActivity o-- com.cleanup.todoc.model.entity.RelationTaskWithProject : relationTaskWithProject
+  com.cleanup.todoc.ui.MainActivity o-- com.cleanup.todoc.ui.MainViewModel : viewModel
+  com.cleanup.todoc.ui.MainViewModel -up-|> androidx.lifecycle.ViewModel
+  com.cleanup.todoc.ui.MainViewModel o-- com.cleanup.todoc.model.repository.ProjectRepository : mProjectRepository
+  com.cleanup.todoc.ui.MainViewModel o-- com.cleanup.todoc.model.repository.TaskRepository : mTaskRepository
+  com.cleanup.todoc.ui.MainViewModel o-- com.cleanup.todoc.model.dao.ProjectDao : projectDao
+  com.cleanup.todoc.ui.MainViewModel o-- com.cleanup.todoc.model.dao.TaskDao : taskDao
+  com.cleanup.todoc.ui.TasksAdapter -up-|> androidx.recyclerview.widget.RecyclerView.Adapter
+  com.cleanup.todoc.ui.TasksAdapter o-- com.cleanup.todoc.ui.TasksAdapter.DeleteTaskListener : deleteTaskListener
+  com.cleanup.todoc.ui.TasksAdapter o-- com.cleanup.todoc.ui.TasksAdapter.DeleteTaskListener : mDeleteTaskListener
+  com.cleanup.todoc.ui.TasksAdapter +-down- com.cleanup.todoc.ui.TasksAdapter.DeleteTaskListener
+  com.cleanup.todoc.ui.TasksAdapter +-down- com.cleanup.todoc.ui.TasksAdapter.TaskViewHolder
+  com.cleanup.todoc.ui.TasksAdapter.TaskViewHolder -up-|> androidx.recyclerview.widget.RecyclerView.ViewHolder
+  com.cleanup.todoc.ui.TasksAdapter.TaskViewHolder o-- com.cleanup.todoc.ui.TasksAdapter.DeleteTaskListener : mDeleteTaskListener
+  com.cleanup.todoc.ui.Utils +-down- com.cleanup.todoc.ui.Utils.SortMethod
+
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

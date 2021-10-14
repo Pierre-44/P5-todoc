@@ -1,0 +1,179 @@
+@startuml
+
+title __UI's Class Diagram__\n
+
+  namespace com.cleanup.todoc {
+    namespace ui {
+      class com.cleanup.todoc.ui.AddTaskDialogFragment {
+          - allProjects : List<Project>
+          - dialog : AlertDialog
+          - dialogEditText : EditText
+          - dialogSpinner : Spinner
+          + AddTaskDialogFragment()
+          {static} + newInstance()
+          + onCreate()
+          + onCreateDialog()
+          + onDestroyView()
+          - addTask()
+          - onPositiveButtonClick()
+          - populateDialogSpinner()
+      }
+    }
+  }
+  
+
+  namespace com.cleanup.todoc {
+    namespace ui {
+      class com.cleanup.todoc.ui.AddTaskViewModel {
+          - mExecutor : Executor
+          - mProjects : LiveData<List<Project>>
+          + AddTaskViewModel()
+          + getProjects()
+          + insertTask()
+      }
+    }
+  }
+  
+
+  namespace com.cleanup.todoc {
+    namespace ui {
+      class com.cleanup.todoc.ui.MainActivity {
+          + dialog : AlertDialog
+          - allProjects : Project[]
+          - dialogEditText : EditText
+          - dialogSpinner : Spinner
+          - fabAddTask : FloatingActionButton
+          - lblNoTasks : TextView
+          - listTasks : RecyclerView
+          + getTaskAdapterCount()
+          + init()
+          + insertTask()
+          + onCreate()
+          + onCreateOptionsMenu()
+          + onDeleteTask()
+          + onOptionsItemSelected()
+          - showAddTaskAlertDialog()
+      }
+    }
+  }
+  
+
+  namespace com.cleanup.todoc {
+    namespace ui {
+      class com.cleanup.todoc.ui.MainViewModel {
+          + mListTaskLiveData : LiveData<List<RelationTaskWithProject>>
+          + mSortedListMediatorLiveData : MediatorLiveData<List<RelationTaskWithProject>>
+          + mSortingTypeMutableLiveData : MutableLiveData<SortMethod>
+          - allProjects : LiveData<List<Project>>
+          - allTasksLivedataAZ : LiveData<List<RelationTaskWithProject>>
+          - allTasksLivedataOld : LiveData<List<RelationTaskWithProject>>
+          - allTasksLivedataRecent : LiveData<List<RelationTaskWithProject>>
+          - allTasksLivedataZA : LiveData<List<RelationTaskWithProject>>
+          {static} - mExecutor : Executor
+          + MainViewModel()
+          + MainViewModel()
+          + deleteTask()
+          + deleteTaskById()
+          {static} + getExecutor()
+          + insertProject()
+          + insertTask()
+          + setSorting()
+          - combineDataAndSortingType()
+      }
+    }
+  }
+  
+
+  namespace com.cleanup.todoc {
+    namespace ui {
+      class com.cleanup.todoc.ui.TasksAdapter {
+          - mRelationTaskWithProjects : List<RelationTaskWithProject>
+          + TasksAdapter()
+          + getItemCount()
+          + onBindViewHolder()
+          + onCreateViewHolder()
+          ~ updateTasks()
+      }
+    }
+  }
+  
+
+  namespace com.cleanup.todoc {
+    namespace ui {
+      interface com.cleanup.todoc.ui.TasksAdapter.DeleteTaskListener {
+          {abstract} + onDeleteTask()
+      }
+    }
+  }
+  
+
+  namespace com.cleanup.todoc {
+    namespace ui {
+      class com.cleanup.todoc.ui.TasksAdapter.TaskViewHolder {
+          - imgDelete : AppCompatImageView
+          - imgProject : AppCompatImageView
+          - lblProjectName : TextView
+          - lblTaskName : TextView
+          + TaskViewHolder()
+      }
+    }
+  }
+  
+
+  namespace com.cleanup.todoc {
+    namespace ui {
+      abstract class com.cleanup.todoc.ui.Utils {
+      }
+    }
+  }
+  
+
+  namespace com.cleanup.todoc {
+    namespace ui {
+      enum SortMethod {
+        ALPHABETICAL
+        ALPHABETICAL_INVERTED
+        NONE
+        OLD_FIRST
+        RECENT_FIRST
+      }
+    }
+  }
+  
+
+  com.cleanup.todoc.ui.AddTaskDialogFragment -up-|> androidx.fragment.app.DialogFragment
+  com.cleanup.todoc.ui.AddTaskDialogFragment o-- com.cleanup.todoc.databinding.DialogAddTaskBinding : binding
+  com.cleanup.todoc.ui.AddTaskDialogFragment o-- com.cleanup.todoc.ui.AddTaskViewModel : mAddTaskViewModel
+  com.cleanup.todoc.ui.AddTaskViewModel -up-|> androidx.lifecycle.ViewModel
+  com.cleanup.todoc.ui.AddTaskViewModel o-- com.cleanup.todoc.model.repository.ProjectRepository : mProjectRepository
+  com.cleanup.todoc.ui.AddTaskViewModel o-- com.cleanup.todoc.model.repository.TaskRepository : mTaskRepository
+  com.cleanup.todoc.ui.MainActivity .up.|> com.cleanup.todoc.ui.TasksAdapter.DeleteTaskListener
+  com.cleanup.todoc.ui.MainActivity -up-|> androidx.appcompat.app.AppCompatActivity
+  com.cleanup.todoc.ui.MainActivity o-- com.cleanup.todoc.ui.TasksAdapter : adapter
+  com.cleanup.todoc.ui.MainActivity o-- com.cleanup.todoc.databinding.ActivityMainBinding : binding
+  com.cleanup.todoc.ui.MainActivity o-- com.cleanup.todoc.ui.Utils.SortMethod : mSortingTypes
+  com.cleanup.todoc.ui.MainActivity o-- com.cleanup.todoc.model.entity.RelationTaskWithProject : relationTaskWithProject
+  com.cleanup.todoc.ui.MainActivity o-- com.cleanup.todoc.ui.MainViewModel : viewModel
+  com.cleanup.todoc.ui.MainViewModel -up-|> androidx.lifecycle.ViewModel
+  com.cleanup.todoc.ui.MainViewModel o-- com.cleanup.todoc.model.repository.ProjectRepository : mProjectRepository
+  com.cleanup.todoc.ui.MainViewModel o-- com.cleanup.todoc.model.repository.TaskRepository : mTaskRepository
+  com.cleanup.todoc.ui.MainViewModel o-- com.cleanup.todoc.model.dao.ProjectDao : projectDao
+  com.cleanup.todoc.ui.MainViewModel o-- com.cleanup.todoc.model.dao.TaskDao : taskDao
+  com.cleanup.todoc.ui.TasksAdapter -up-|> androidx.recyclerview.widget.RecyclerView.Adapter
+  com.cleanup.todoc.ui.TasksAdapter o-- com.cleanup.todoc.ui.TasksAdapter.DeleteTaskListener : deleteTaskListener
+  com.cleanup.todoc.ui.TasksAdapter o-- com.cleanup.todoc.ui.TasksAdapter.DeleteTaskListener : mDeleteTaskListener
+  com.cleanup.todoc.ui.TasksAdapter +-down- com.cleanup.todoc.ui.TasksAdapter.DeleteTaskListener
+  com.cleanup.todoc.ui.TasksAdapter +-down- com.cleanup.todoc.ui.TasksAdapter.TaskViewHolder
+  com.cleanup.todoc.ui.TasksAdapter.TaskViewHolder -up-|> androidx.recyclerview.widget.RecyclerView.ViewHolder
+  com.cleanup.todoc.ui.TasksAdapter.TaskViewHolder o-- com.cleanup.todoc.ui.TasksAdapter.DeleteTaskListener : mDeleteTaskListener
+  com.cleanup.todoc.ui.Utils +-down- com.cleanup.todoc.ui.Utils.SortMethod
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml
