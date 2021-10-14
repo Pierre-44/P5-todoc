@@ -58,7 +58,4 @@ public abstract class TodocDatabase extends RoomDatabase {
         });
     }
 
-    public static TodocDatabase getInstanceDB() {
-        return instanceDB;
-    }
 }
